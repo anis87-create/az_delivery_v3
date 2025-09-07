@@ -1,10 +1,14 @@
 import '../App.css';
+import Navbar from '../components/layout/Navbar';
+import Home from '../pages/Home/index.jsx';
 
 function App() {
   return (
-    <div className="App">
-       Food Delivery App
-    </div>
+    <>
+       <Navbar />
+       <Home />
+       
+    </>
   );
 }
 
