@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import logo from '../../../assets/images/logo.png';
 import avatar from '../../../assets/images/avatar.png';
 import { HiHome, HiSearch, HiShoppingCart, HiDocumentText } from 'react-icons/hi';
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -35,10 +36,10 @@ const Navbar = () => {
             <nav className='hidden md:flex'>
               <ul className='flex items-center'>
                 <li className='inline-block align-middle'>
-                  <a href="/public/index.html" className='flex items-center p-[10px] hover:text-green-500 transition-colors'>
+                  <Link to="/" className='flex items-center p-[10px] hover:text-green-500 transition-colors'>
                     <HiHome className="w-5 h-5 sm:mr-1.5" />
                     <span className='hidden md:inline md:ml-[6px]'>Home</span>
-                  </a>
+                  </Link>
                 </li>
                 <li className='inline-block align-middle'>
                   <a href="/src/pages/search.html" className="nav-link search-link flex items-center p-[10px] hover:text-green-500 transition-colors">
@@ -47,10 +48,10 @@ const Navbar = () => {
                   </a> 
                 </li>
                 <li className='inline-block align-middle'>
-                  <a href="/src/pages/cart.html" id="cart" className="nav-link cart-link flex items-center p-[10px] text-green-500 hover:text-green-600 transition-colors">
+                  <Link to="/cart" id="cart" className="nav-link cart-link flex items-center p-[10px] text-green-500 hover:text-green-600 transition-colors">
                     <HiShoppingCart className="w-5 h-5 sm:mr-1.5" />
                     <span className='hidden md:inline md:ml-[6px]'>Cart</span>
-                  </a> 
+                  </Link> 
                 </li>
                 <li className='inline-block align-middle'>
                   <a href="/src/pages/orders.html" className='flex items-center p-[10px] hover:text-green-500 transition-colors'>
@@ -60,9 +61,9 @@ const Navbar = () => {
                 </li>
                 <li className='flex items-center inline-block align-middle ml-[6px]'>
                   <span className='text-sm font-medium text-gray-700 mr-3 bg-gray-100 px-3 py-1 rounded-full'>Hello, Anis Zarrouk</span>
-                  <a href='#' className='flex items-center p-[10px] hover:opacity-80 transition-opacity'>
+                  <button className='flex items-center p-[10px] hover:opacity-80 transition-opacity'>
                     <img src={avatar} alt="avatar"  className='w-[32px] h-[32px] rounded-full border-2 border-green-500'/>
-                  </a>
+                  </button>
                 </li>
               </ul>
             </nav>
@@ -73,10 +74,10 @@ const Navbar = () => {
           <nav className='bg-white border-t border-gray-200 py-4'>
             <ul className='space-y-2'>
               <li>
-                <a href="/public/index.html" className='flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors'>
+                <Link to="/" className='flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors'>
                   <HiHome className="w-5 h-5 mr-3" />
                   <span>Home</span>
-                </a>
+                </Link>
               </li>
               <li>
                 <a href="/src/pages/search.html" className="flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors">
@@ -85,10 +86,10 @@ const Navbar = () => {
                 </a>
               </li>
               <li>
-                <a href="/src/pages/cart.html" className="flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors text-green-500">
+                <Link to="/cart" className='flex items-center p-3 text-green-500 hover:bg-gray-50 rounded-lg transition-colors'>
                   <HiShoppingCart className="w-5 h-5 mr-3" />
                   <span>Cart</span>
-                </a>
+                </Link>
               </li>
               <li>
                 <a href="/src/pages/orders.html" className='flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors'>
