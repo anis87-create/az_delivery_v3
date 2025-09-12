@@ -1,11 +1,13 @@
 import React from 'react'
+import { Link } from 'react-router'
 import { FaStar } from 'react-icons/fa';
 import { MdAccessTime } from 'react-icons/md';
 import { HiChevronRight } from 'react-icons/hi';
 
-const index = ({img, name, rate, time, tags}) => {
+const index = ({id, img, name, rate, time, tags}) => {
   return (
-    <div className='group overflow-hidden shadow-card rounded-2xl my-4 cursor-pointer transition-all duration-300 ease-in-out shadow-[0px_1px_4px_rgba(0,0,0,0.16)] hover:shadow-xl hover:scale-105 hover:-translate-y-2'>
+    <Link to={`/restaurant/${id}`} className='block'>
+      <div className='group overflow-hidden shadow-card rounded-2xl my-4 cursor-pointer transition-all duration-300 ease-in-out shadow-[0px_1px_4px_rgba(0,0,0,0.16)] hover:shadow-xl hover:scale-105 hover:-translate-y-2'>
       <div className="relative overflow-hidden">
         <div className="absolute w-full h-full top-0 left-0 bg-black/20 group-hover:bg-black/40 transition-all duration-300 z-10"></div>
         <img src={img} alt={name} className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110" />
@@ -37,6 +39,7 @@ const index = ({img, name, rate, time, tags}) => {
         </div>
       </div>
     </div>
+    </Link>
   )
 }
 

@@ -3,6 +3,12 @@ import sliderImg from '../../../src/assets/images/slider_img.avif';
 import { HiChevronLeft, HiChevronRight } from 'react-icons/hi';
 import Category from '../../components/layout/Category';
 import Restaurant from '../Restaurant';
+import RestaurantCard from '../../components/layout/RestaurantCard';
+import PopularDish from '../../components/layout/PopularDish';
+import SpecialOffer from '../../components/layout/SpecialOffer';
+import { restaurants } from '../../data/restaurants';
+import { trendingDishes, topRatedRestaurants, newRestaurants, specialOffers, recommendedForYou } from '../../data/trending';
+
 const categories = [
   {
       name:'Pizza',
@@ -49,376 +55,6 @@ const categories = [
     icone: 'healthy',
     img:'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8aGVhbHRoeXxlbnwwfHwwfHx8MA%3D%3D'
   }
-
-];
-const restaurants = [
-    {
-        id: 1,
-        name:'Burger Palace',
-        category: 'Burger',
-        type: 'restaurant',
-        img: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
-        items: [
-            {
-                name:'Classic Cheesburger',
-                ingredients: ['Beef patty','cheddar cheese', 'lettuce','tomato','onion','pickles','special sauce'],
-                price: 8.99,
-                category: 'popular'
-            },
-            {
-                name: 'Bacon Deluxe',
-                ingredients: ['Beef Paty','bacon','cheddar cheese','letuce','tomato','mayo'],
-                price: 10.99,
-                category:'popular'
-            },
-            {
-               name:'Veggie Burger',
-               ingredients: ['Plant-based patty','lettuce','tomato','onion','pickles','vegan mayo'],
-               price: 9.99,
-               category:'burgers'
-            },
-            {
-               name:'Double Trouble',
-               ingredients: ['Two beef patties','double cheese','lettuce','tomato','onion','special sauce'],
-               price: 12.99,
-               category:'burgers'
-            },
-            {
-               name:'Mushroom Swiss',
-               ingredients: ['Beef patty','sautéed mushrooms','swiss cheese','truffle aioli'],
-               price: 11.99,
-               category:'burgers'
-            },
-            {
-               name:'French Fries',
-               ingredients: ['Crispy golden fries seasoned with our special salt blend.'],
-               price: 3.99,
-               category:'sides'
-            },
-            {
-               name:'Onion Rings',
-               ingredients: ['Crispy battered onion rings served with dipping sauce.'],
-               price: 4.99,
-               category:'sides'
-            },
-            {
-               name:'Milkshake',
-               ingredients: ['Creamy vanilla','chocolate','strawberry milkshake'],
-               price: 5.99,
-               category:'drinks'
-            },
-            {
-               name:'soft frink',
-               ingredients: ['Cola','lemon-lime','root beer'],
-               price: 2.49,
-               category:'drinks'
-            }
-        ],
-        rate:4.5,
-        tags: ['American','Burgers'],
-        time:'20-35'
-    },
-    {
-        id: 2,
-        name: 'Pizza Heaven',
-        category: 'Pizza',
-        type: 'restaurant',
-        img: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
-        items: [
-            {
-                name: 'Margherita',
-                ingredients: ['Tomato sauce', 'Mozzarella', 'Fresh basil'],
-                price: 9.99,
-                category: 'pizza'
-            },
-            {
-                name: 'Pepperoni',
-                ingredients: ['Tomato sauce', 'Mozzarella', 'Pepperoni'],
-                price: 11.49,
-                category: 'pizza'
-            },
-            {
-                name: 'Veggie Supreme',
-                ingredients: ['Tomato sauce', 'Mozzarella', 'Bell peppers', 'Olives', 'Onions', 'Mushrooms'],
-                price: 10.99,
-                category: 'pizza'
-            },
-            {
-                name: 'Garlic Bread',
-                ingredients: ['Fresh bread', 'Garlic butter', 'Parsley'],
-                price: 4.99,
-                category: 'sides'
-            },
-            {
-                name: 'Soft Drink',
-                ingredients: ['Cola', 'Lemon-lime', 'Orange soda'],
-                price: 2.49,
-                category: 'drinks'
-            },
-            {
-                name: 'Popular Combo',
-                ingredients: ['Pepperoni Pizza', 'Garlic Bread', 'Soft Drink'],
-                price: 16.99,
-                category: 'popular'
-            }
-        ],
-        rate: 4.7,
-        tags: ['Italia','Pizza'],
-        time:'30-45'
-
-    },
-    {
-        id: 3,
-        name: 'Sushi Express',
-        category: 'Sushi',
-        type: 'restaurant',
-        img: 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
-        items: [
-            {
-                name: 'California Roll',
-                ingredients: ['Crab', 'Avocado', 'Cucumber', 'Rice', 'Seaweed'],
-                price: 8.99,
-                category: 'sushi'
-            },
-            {
-                name: 'Salmon Nigiri',
-                ingredients: ['Salmon', 'Rice'],
-                price: 6.49,
-                category: 'sushi'
-            },
-            {
-                name: 'Miso Soup',
-                ingredients: ['Miso paste', 'Tofu', 'Seaweed', 'Green onion'],
-                price: 3.99,
-                category: 'sides'
-            },
-            {
-                name: 'Green Tea',
-                ingredients: ['Green tea leaves', 'Water'],
-                price: 2.49,
-                category: 'drinks'
-            }
-        ],
-        rate: 4.5,
-        tags: ['Japanese','Sushi'],
-        time:'20-35'
-    },
-    { 
-        id: 4,
-        name: 'Tacos Fiesta',
-        category:'mexican',
-        type: 'restaurant',
-        img: 'https://images.unsplash.com/photo-1613514785940-daed07799d9b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
-        items: [
-            {
-                name: 'Chicken Taco',
-                ingredients: ['Chicken', 'Tortilla', 'Lettuce', 'Cheese', 'Salsa'],
-                price: 4.99,
-                category: 'tacos'
-            },
-            {
-                name: 'Beef Burrito',
-                ingredients: ['Beef', 'Rice', 'Beans', 'Cheese', 'Tortilla'],
-                price: 7.49,
-                category: 'burritos'
-            },
-            {
-                name: 'Nachos',
-                ingredients: ['Tortilla chips', 'Cheese', 'Jalapenos', 'Salsa'],
-                price: 5.99,
-                category: 'sides'
-            },
-            {
-                name: 'Horchata',
-                ingredients: ['Rice', 'Milk', 'Cinnamon', 'Sugar'],
-                price: 2.99,
-                category: 'drinks'
-            }
-        ],
-        rate: 4.3,
-        tags: ['Mexican','Tacos'],
-        time:'15-30'
-    },
-    {
-        id: 5,
-        name: 'Salad Bar',
-        category:'healthy',
-        type: 'restaurant',
-        img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
-        items: [
-            {
-                name: 'Caesar Salad',
-                ingredients: ['Romaine lettuce', 'Croutons', 'Parmesan', 'Caesar dressing'],
-                price: 7.99,
-                category: 'salad'
-            },
-            {
-                name: 'Greek Salad',
-                ingredients: ['Tomato', 'Cucumber', 'Feta', 'Olives', 'Onion'],
-                price: 8.49,
-                category: 'salad'
-            },
-            {
-                name: 'Quinoa Bowl',
-                ingredients: ['Quinoa', 'Spinach', 'Cherry tomatoes', 'Avocado'],
-                price: 9.49,
-                category: 'bowls'
-            },
-            {
-                name: 'Fresh Juice',
-                ingredients: ['Orange', 'Carrot', 'Apple'],
-                price: 3.99,
-                category: 'drinks'
-            }
-        ],
-        rate: 4.4,
-        tags: ['Healthy','Salads'],
-        time:'20-35'
-    },
-    {
-        id: 6,
-        name: 'Noodle House',
-        category:'asian',
-        type: 'restaurant',
-        img: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
-        items: [
-            {
-                name: 'Chicken Ramen',
-                ingredients: ['Noodles', 'Chicken broth', 'Chicken', 'Egg', 'Green onion'],
-                price: 10.99,
-                category: 'ramen'
-            },
-            {
-                name: 'Vegetable Stir Fry',
-                ingredients: ['Noodles', 'Broccoli', 'Carrots', 'Bell peppers', 'Soy sauce'],
-                price: 9.49,
-                category: 'noodles'
-            },
-            {
-                name: 'Spring Rolls',
-                ingredients: ['Rice paper', 'Vegetables', 'Soy sauce'],
-                price: 4.99,
-                category: 'sides'
-            },
-            {
-                name: 'Bubble Tea',
-                ingredients: ['Tea', 'Milk', 'Tapioca pearls'],
-                price: 4.49,
-                category: 'drinks'
-            }
-        ],
-        rate: 4.5,
-        tags: ['Asian','Noddles'],
-        time:'20-40'
-    },
-    {
-        id: 7,
-        name: 'Coffee Corner',
-        category: 'cafe',
-        type: 'quick_bite',
-        img: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
-        items: [
-            {
-                name: 'Espresso',
-                ingredients: ['Premium coffee beans', 'Hot water'],
-                price: 3.99,
-                category: 'coffee'
-            },
-            {
-                name: 'Cappuccino',
-                ingredients: ['Espresso', 'Steamed milk', 'Milk foam'],
-                price: 4.99,
-                category: 'coffee'
-            },
-            {
-                name: 'Croissant',
-                ingredients: ['Butter pastry', 'Fresh baked'],
-                price: 3.49,
-                category: 'pastry'
-            }
-        ],
-        rate: 4.6,
-        tags: ['Coffee', 'Pastries'],
-        time: '10-15'
-    },
-    {
-        id: 8,
-        name: 'Brew & Bean',
-        category: 'cafe',
-        type: 'quick_bite',
-        img: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
-        items: [
-            {
-                name: 'Cold Brew',
-                ingredients: ['Cold brewed coffee', 'Ice'],
-                price: 4.49,
-                category: 'coffee'
-            },
-            {
-                name: 'Avocado Toast',
-                ingredients: ['Sourdough bread', 'Fresh avocado', 'Lime', 'Salt'],
-                price: 8.99,
-                category: 'breakfast'
-            }
-        ],
-        rate: 4.4,
-        tags: ['Specialty Coffee', 'Breakfast'],
-        time: '15-20'
-    },
-    {
-        id: 9,
-        name: 'Night Owl Bar',
-        category: 'bar',
-        type: 'quick_bite',
-        img: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
-        items: [
-            {
-                name: 'Classic Mojito',
-                ingredients: ['White rum', 'Mint', 'Lime', 'Sugar', 'Soda water'],
-                price: 12.99,
-                category: 'cocktails'
-            },
-            {
-                name: 'Whiskey Sour',
-                ingredients: ['Bourbon', 'Lemon juice', 'Sugar syrup', 'Egg white'],
-                price: 14.99,
-                category: 'cocktails'
-            },
-            {
-                name: 'Nachos Supreme',
-                ingredients: ['Tortilla chips', 'Cheese', 'Jalapeños', 'Guacamole'],
-                price: 9.99,
-                category: 'appetizers'
-            }
-        ],
-        rate: 4.2,
-        tags: ['Cocktails', 'Late Night'],
-        time: '5-10'
-    },
-    {
-        id: 10,
-        name: 'Rooftop Lounge',
-        category: 'bar',
-        type: 'quick_bite',
-        img: 'https://images.unsplash.com/photo-1516450137517-162bfbeb8dba?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
-        items: [
-            {
-                name: 'Signature Martini',
-                ingredients: ['Premium gin', 'Dry vermouth', 'Olives'],
-                price: 16.99,
-                category: 'cocktails'
-            },
-            {
-                name: 'Wine Selection',
-                ingredients: ['Red/White wine', 'Premium selection'],
-                price: 8.99,
-                category: 'wine'
-            }
-        ],
-        rate: 4.8,
-        tags: ['Premium Bar', 'Rooftop View'],
-        time: '5-10'
-    }
 ];
 const index = () => {
   return (
@@ -471,6 +107,151 @@ const index = () => {
           }
         </div>
      </div>
+
+     {/**🔥 Trending section */}
+     <div className='container mx-auto w-[90%]'> 
+       <div className='flex flex-col my-8 mx-0 md:my-12 md:mx-0 lg:my-[4rem] lg:mx-0'>
+           <div className="flex justify-between items-center mb-4 sm:mb-6">
+             <div>
+               <h2 className='text-xl sm:text-2xl font-bold flex items-center gap-2'>
+                 🔥 Trending
+               </h2>
+               <p className="text-gray-600 text-sm mt-1">Most popular dishes right now</p>
+             </div>
+             <button className="text-orange-500 hover:text-orange-600 font-medium text-sm sm:text-base transition-colors duration-200">
+               View All
+             </button>
+           </div>
+           <div className='grid lg:grid-cols-4 gap-4 md:grid-cols-2 md:gap-4'>
+            {trendingDishes.map(dish => 
+              <PopularDish 
+                key={dish.id}
+                dish={dish}
+              />
+            )}
+           </div>
+       </div>
+     </div>
+
+     {/**💰 Special Offers section */}
+     <div className='container mx-auto w-[90%]'> 
+       <div className='flex flex-col my-8 mx-0 md:my-12 md:mx-0 lg:my-[4rem] lg:mx-0'>
+           <div className="flex justify-between items-center mb-4 sm:mb-6">
+             <div>
+               <h2 className='text-xl sm:text-2xl font-bold flex items-center gap-2'>
+                 💰 Special Offers
+               </h2>
+               <p className="text-gray-600 text-sm mt-1">Save on your favorite dishes</p>
+             </div>
+             <button className="text-orange-500 hover:text-orange-600 font-medium text-sm sm:text-base transition-colors duration-200">
+               View All
+             </button>
+           </div>
+           <div className='grid lg:grid-cols-3 gap-4 md:grid-cols-2 md:gap-4'>
+            {specialOffers.map(offer => 
+              <SpecialOffer 
+                key={offer.id}
+                offer={offer}
+              />
+            )}
+           </div>
+       </div>
+     </div>
+
+     {/**⭐ Top Rated section */}
+     <div className='container mx-auto w-[90%]'> 
+       <div className='flex flex-col my-8 mx-0 md:my-12 md:mx-0 lg:my-[4rem] lg:mx-0'>
+           <div className="flex justify-between items-center mb-4 sm:mb-6">
+             <div>
+               <h2 className='text-xl sm:text-2xl font-bold flex items-center gap-2'>
+                 ⭐ Top Rated
+               </h2>
+               <p className="text-gray-600 text-sm mt-1">Highest rated restaurants by our customers</p>
+             </div>
+             <button className="text-orange-500 hover:text-orange-600 font-medium text-sm sm:text-base transition-colors duration-200">
+               View All
+             </button>
+           </div>
+           <div className='grid lg:grid-cols-3 gap-4 md:grid-cols-2 md:gap-4'>
+            {topRatedRestaurants.map(restaurant => 
+              <RestaurantCard 
+                key={restaurant.id}
+                id={restaurant.id}
+                img={restaurant.img}
+                name={restaurant.name}
+                rate={restaurant.rate}
+                time={restaurant.time}
+                tags={restaurant.tags}
+                badge={restaurant.badge}
+              />
+            )}
+           </div>
+       </div>
+     </div>
+
+     {/**🚀 New Arrivals section */}
+     <div className='container mx-auto w-[90%]'> 
+       <div className='flex flex-col my-8 mx-0 md:my-12 md:mx-0 lg:my-[4rem] lg:mx-0'>
+           <div className="flex justify-between items-center mb-4 sm:mb-6">
+             <div>
+               <h2 className='text-xl sm:text-2xl font-bold flex items-center gap-2'>
+                 🚀 New Arrivals
+               </h2>
+               <p className="text-gray-600 text-sm mt-1">Discover our newest restaurant partners</p>
+             </div>
+             <button className="text-orange-500 hover:text-orange-600 font-medium text-sm sm:text-base transition-colors duration-200">
+               View All
+             </button>
+           </div>
+           <div className='grid lg:grid-cols-3 gap-4 md:grid-cols-2 md:gap-4'>
+            {newRestaurants.map(restaurant => 
+              <RestaurantCard 
+                key={restaurant.id}
+                id={restaurant.id}
+                img={restaurant.img}
+                name={restaurant.name}
+                rate={restaurant.rate}
+                time={restaurant.time}
+                tags={restaurant.tags}
+                badge={restaurant.badge}
+                isNew={restaurant.isNew}
+              />
+            )}
+           </div>
+       </div>
+     </div>
+
+     {/**🎯 Recommended For You section */}
+     <div className='container mx-auto w-[90%]'> 
+       <div className='flex flex-col my-8 mx-0 md:my-12 md:mx-0 lg:my-[4rem] lg:mx-0'>
+           <div className="flex justify-between items-center mb-4 sm:mb-6">
+             <div>
+               <h2 className='text-xl sm:text-2xl font-bold flex items-center gap-2'>
+                 🎯 Recommended For You
+               </h2>
+               <p className="text-gray-600 text-sm mt-1">Personalized selection based on your taste</p>
+             </div>
+             <button className="text-orange-500 hover:text-orange-600 font-medium text-sm sm:text-base transition-colors duration-200">
+               View All
+             </button>
+           </div>
+           <div className='grid lg:grid-cols-3 gap-4 md:grid-cols-2 md:gap-4'>
+            {recommendedForYou.map(restaurant => 
+              <RestaurantCard 
+                key={restaurant.id}
+                id={restaurant.id}
+                img={restaurant.img}
+                name={restaurant.name}
+                rate={restaurant.rate}
+                time={restaurant.time}
+                tags={restaurant.tags}
+                reason={restaurant.reason}
+              />
+            )}
+           </div>
+       </div>
+     </div>
+
      {/**cafes and bars section */}
      <>
      <div className='container mx-auto w-[90%]'> 
@@ -485,6 +266,7 @@ const index = () => {
             {restaurants.filter(place => place.type === 'quick_bite').slice(0, 3).map(place => 
               <Restaurant 
                 key={place.id}
+                id={place.id}
                 img={place.img}
                 name={place.name}
                 rate={place.rate}
@@ -511,6 +293,7 @@ const index = () => {
             {restaurants.filter(restaurant => restaurant.type === 'restaurant').slice(0, 6).map(restaurant => 
               <Restaurant 
                 key={restaurant.id}
+                id={restaurant.id}
                 img={restaurant.img}
                 name={restaurant.name}
                 rate={restaurant.rate}
