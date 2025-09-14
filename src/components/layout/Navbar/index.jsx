@@ -1,14 +1,19 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import logo from '../../../assets/images/logo.png';
 import avatar from '../../../assets/images/avatar.png';
-import { HiHome, HiSearch, HiShoppingCart, HiDocumentText } from 'react-icons/hi';
+import { HiHome, HiSearch, HiShoppingCart, HiDocumentText, HiUser, HiCog, HiLogout } from 'react-icons/hi';
 import { Link } from 'react-router-dom';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const toggleProfileMenu = () => {
+    setIsProfileMenuOpen(!isProfileMenuOpen);
   };
 
   return (
@@ -42,10 +47,10 @@ const Navbar = () => {
                   </Link>
                 </li>
                 <li className='inline-block align-middle'>
-                  <a href="/src/pages/search.html" className="nav-link search-link flex items-center p-[10px] hover:text-green-500 transition-colors">
+                  <Link to='/search' className="nav-link search-link flex items-center p-[10px] hover:text-green-500 transition-colors">
                     <HiSearch className="w-5 h-5 sm:mr-1.5" />
                     <span className='hidden md:inline md:ml-[6px]'>Search</span>
-                  </a> 
+                  </Link> 
                 </li>
                 <li className='inline-block align-middle'>
                   <Link to="/cart" id="cart" className="nav-link cart-link flex items-center p-[10px] text-green-500 hover:text-green-600 transition-colors">
@@ -59,11 +64,32 @@ const Navbar = () => {
                     <span className='hidden md:inline md:ml-[6px]'>Orders</span>
                   </a>
                 </li>
-                <li className='flex items-center inline-block align-middle ml-[6px]'>
+                <li className='flex items-center inline-block align-middle ml-[6px] relative'>
                   <span className='text-sm font-medium text-gray-700 mr-3 bg-gray-100 px-3 py-1 rounded-full'>Hello, Anis Zarrouk</span>
-                  <button className='flex items-center p-[10px] hover:opacity-80 transition-opacity'>
+                  <button 
+                    onClick={toggleProfileMenu}
+                    className='flex items-center p-[10px] hover:opacity-80 transition-opacity'
+                  >
                     <img src={avatar} alt="avatar"  className='w-[32px] h-[32px] rounded-full border-2 border-green-500'/>
                   </button>
+                  
+                  {/* Profile Dropdown Menu */}
+                  {isProfileMenuOpen && (
+                    <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                      <Link to="/profile" className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
+                        <HiUser className="w-5 h-5 mr-3" />
+                        <span>Profile</span>
+                      </Link>
+                      <Link to="/settings" className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
+                        <HiCog className="w-5 h-5 mr-3" />
+                        <span>Settings</span>
+                      </Link>
+                      <Link to="/login" className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
+                        <HiLogout className="w-5 h-5 mr-3" />
+                        <span>Logout</span>
+                      </Link>
+                    </div>
+                  )}
                 </li>
               </ul>
             </nav>
@@ -80,10 +106,10 @@ const Navbar = () => {
                 </Link>
               </li>
               <li>
-                <a href="/src/pages/search.html" className="flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                <Link to='/search' className="flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors">
                   <HiSearch className="w-5 h-5 mr-3" />
                   <span>Search</span>
-                </a>
+                </Link>
               </li>
               <li>
                 <Link to="/cart" className='flex items-center p-3 text-green-500 hover:bg-gray-50 rounded-lg transition-colors'>
