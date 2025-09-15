@@ -23,7 +23,7 @@ export const authSlice = createSlice({
         register: (state, action) => {
            const newUser =  {
                id: uuidv4(),
-               created_at: new Date(),
+               created_at: new Date().toISOString(),
                ...action.payload
            };
            state.users = [...state.users, newUser];
@@ -33,10 +33,17 @@ export const authSlice = createSlice({
         logout:(state) => {
             state.isAuth = false;
             localStorage.removeItem('currentUser');
+        },
+        reset: () => {
+            return {
+                users: [],
+                currentUser: {},
+                isAuth: false
+            }
         }
     }
 });
 
-export const {login, register, logout} = authSlice.actions;
+export const {login, register, logout, reset} = authSlice.actions;
 
 export default authSlice.reducer;

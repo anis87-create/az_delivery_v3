@@ -1,7 +1,31 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom'
+import { login } from '../../store/features/authSlice';
 
 const Login = () => {
+  const [form, setForm] = useState({
+      email:'',
+      password:'',
+  }); 
+  const dispatch = useDispatch();
+
+  const handleChange = (e) => {
+    const {name, value} = e.target;
+    setForm({
+      ...form,
+      [name]: value
+    })
+  }
+  const onSubmit = (e) => {
+    e.preventDefault();
+    try {
+       dispatch(form)
+    } catch (error) {
+      
+    }
+    dispatch(login(form))
+  }
   return (
     <div className="h-screen bg-white overflow-hidden">
       <div className="h-full w-full flex">
@@ -25,6 +49,7 @@ const Login = () => {
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     placeholder="Enter your email"
+                    onChange={handleChange}
                   />
                 </div>
 
@@ -39,6 +64,7 @@ const Login = () => {
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     placeholder="Enter your password"
+                    onChange={handleChange}
                   />
                 </div>
 

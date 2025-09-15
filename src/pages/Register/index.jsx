@@ -1,7 +1,46 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom'
+import { register, reset } from '../../store/features/authSlice';
 
 const Register = () => {
+  const [form, setForm] = useState({
+    fullName:'',
+    email:'',
+    password:'',
+    phoneNumber:'',
+    role:''
+  }); 
+  const dispatch = useDispatch();
+  const { users } = useSelector(state => state.auth);
+
+  useEffect(() => {
+    //dispatch(reset())
+  }, []);
+  const handleChange = (e) => {
+    const {name, value} = e.target;
+    setForm({
+      ...form,
+      [name]: value
+    })
+  }
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    try {
+         const userFound = users.find(user => user.email === form.email);
+         if(!userFound){
+           dispatch(register(form))
+           
+         } else {
+           console.log('user already exist !');
+         }
+  
+    } catch (error) {
+        console.log(error);
+    }
+
+  }
   return (
     <div className="h-screen bg-white overflow-hidden">
       <div className="h-full w-full flex">
@@ -13,7 +52,9 @@ const Register = () => {
                 <p className="mt-2 text-gray-600">Join us and start ordering</p>
               </div>
 
-              <form className="space-y-6">
+              <form className="space-y-6"
+              onSubmit={onSubmit}
+              >
                 <div>
                   <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
                     Full Name
@@ -25,6 +66,7 @@ const Register = () => {
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     placeholder="Enter your full name"
+                    onChange={handleChange}
                   />
                 </div>
 
@@ -39,6 +81,7 @@ const Register = () => {
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     placeholder="Enter your email"
+                    onChange={handleChange}
                   />
                 </div>
 
@@ -53,6 +96,7 @@ const Register = () => {
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     placeholder="Create a password"
+                    onChange={handleChange}
                   />
                 </div>
 
@@ -67,6 +111,7 @@ const Register = () => {
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     placeholder="Enter your phone number"
+                    onChange={handleChange}
                   />
                 </div>
 
@@ -76,9 +121,10 @@ const Register = () => {
                   </label>
                   <select
                     id="userType"
-                    name="userType"
+                    name="role"
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    onChange={handleChange}
                   >
                     <option value="">Select user type</option>
                     <option value="customer">Customer</option>
