@@ -5,7 +5,7 @@ export const authSlice = createSlice({
     initialState: {
         users: localStorage.getItem('users') ? JSON.parse(localStorage.getItem('users')) : [],
         currentUser: localStorage.getItem('currentUser') ? JSON.parse(localStorage.getItem('currentUser')) : null,
-        isAuth: false,
+        isAuth: true,
     },
     reducers: {
         login:(state, action) => {
@@ -14,11 +14,10 @@ export const authSlice = createSlice({
             localStorage.setItem('currentUser', JSON.stringify(foundUser));
             state.currentUser = foundUser;
             state.isAuth = true;
-           }else {
+           } else {
             state.isAuth = false;
             console.log('invalide credentials');
            }
-
         },
         register: (state, action) => {
            const newUser =  {

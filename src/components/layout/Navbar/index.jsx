@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import logo from '../../../assets/images/logo.png';
-import avatar from '../../../assets/images/avatar.png';
 import { HiHome, HiSearch, HiShoppingCart, HiDocumentText, HiUser, HiCog, HiLogout } from 'react-icons/hi';
 import { Link } from 'react-router-dom';
+import Avatar from '../../common/Avatar';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from '../../../store/features/authSlice';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const { currentUser } = useSelector(state => state.auth);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -15,6 +18,7 @@ const Navbar = () => {
   const toggleProfileMenu = () => {
     setIsProfileMenuOpen(!isProfileMenuOpen);
   };
+  const dispatch = useDispatch();
 
   return (
     <header className='fixed w-full top-0 shadow-lg bg-white z-50'>
@@ -65,12 +69,14 @@ const Navbar = () => {
                   </a>
                 </li>
                 <li className='flex items-center inline-block align-middle ml-[6px] relative'>
-                  <span className='text-sm font-medium text-gray-700 mr-3 bg-gray-100 px-3 py-1 rounded-full'>Hello, Anis Zarrouk</span>
-                  <button 
+                  <span className='text-sm font-medium text-gray-700 mr-3 bg-gray-100 px-3 py-1 rounded-full'>Hello, {currentUser.fullName}</span>
+                  <button
                     onClick={toggleProfileMenu}
                     className='flex items-center p-[10px] hover:opacity-80 transition-opacity'
                   >
-                    <img src={avatar} alt="avatar"  className='w-[32px] h-[32px] rounded-full border-2 border-green-500'/>
+                    <Avatar name={`${currentUser.fullName}`} size="w-[32px] h-[32px]" 
+                     fontSize='text-xs'
+                    />
                   </button>
                   
                   {/* Profile Dropdown Menu */}
@@ -84,7 +90,9 @@ const Navbar = () => {
                         <HiCog className="w-5 h-5 mr-3" />
                         <span>Settings</span>
                       </Link>
-                      <Link to="/login" className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
+                      <Link to="/login" className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
+                      onClick={() => dispatch(logout())}
+                      >
                         <HiLogout className="w-5 h-5 mr-3" />
                         <span>Logout</span>
                       </Link>
@@ -125,8 +133,8 @@ const Navbar = () => {
               </li>
               <li className='border-t border-gray-200 pt-4'>
                 <div className='flex items-center p-3'>
-                  <img src={avatar} alt="avatar" className='w-8 h-8 rounded-full border-2 border-green-500 mr-3'/>
-                  <span className='text-sm font-medium text-gray-700'>Hello, Anis Zarrouk</span>
+                  <Avatar name="Anis Zarrouk" className="mr-3" />
+                  <span className='text-sm font-medium text-gray-700'>Hello, ${currentUser.fullName}</span>
                 </div>
               </li>
             </ul>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { useDispatch } from 'react-redux';
-import { Link } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom'
 import { login } from '../../store/features/authSlice';
 
 const Login = () => {
@@ -8,7 +8,9 @@ const Login = () => {
       email:'',
       password:'',
   }); 
+  const { users } = useSelector(state => state.auth);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const {name, value} = e.target;
@@ -20,7 +22,12 @@ const Login = () => {
   const onSubmit = (e) => {
     e.preventDefault();
     try {
-       dispatch(form)
+       const userFound = users.find(user => user.email === form.email);
+       if(userFound){
+           dispatch(login(form));
+           navigate('/');
+       }
+       
     } catch (error) {
       
     }
@@ -37,7 +44,7 @@ const Login = () => {
               <p className="mt-2 text-gray-600">Sign in to your account</p>
             </div>
 
-              <form className="space-y-6">
+              <form className="space-y-6" onSubmit={onSubmit}>
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                     Email Address

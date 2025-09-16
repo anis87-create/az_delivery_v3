@@ -9,6 +9,7 @@ const Register = () => {
     email:'',
     password:'',
     phoneNumber:'',
+    address:'',
     role:''
   }); 
   const dispatch = useDispatch();
@@ -42,8 +43,8 @@ const Register = () => {
 
   }
   return (
-    <div className="h-screen bg-white overflow-hidden">
-      <div className="h-full w-full flex">
+    <div className="min-h-screen bg-white">
+      <div className="w-full flex min-h-screen">
         {/* Form Section */}
         <div className="w-1/2 p-8 lg:p-12 flex items-center justify-center">
           <div className="max-w-md w-full">
@@ -111,6 +112,21 @@ const Register = () => {
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                     placeholder="Enter your phone number"
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
+                    Address
+                  </label>
+                  <input
+                    id="address"
+                    name="address"
+                    type="text"
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    placeholder="Enter your address"
                     onChange={handleChange}
                   />
                 </div>

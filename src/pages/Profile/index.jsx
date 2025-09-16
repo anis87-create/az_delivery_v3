@@ -1,16 +1,11 @@
 import React from 'react'
 import { HiUser, HiMail, HiPhone, HiLocationMarker, HiPencil } from 'react-icons/hi'
-import avatar from '../../assets/images/avatar.png'
+import Avatar from '../../components/common/Avatar'
+import { useSelector } from 'react-redux'
 
 const Profile = () => {
-  const userInfo = {
-    fullName: 'Anis Zarrouk',
-    email: 'anis.zarrouk@example.com',
-    phone: '+216 98 123 456',
-    address: '123 Main Street, Tunis, Tunisia',
-    userType: 'Customer'
-  }
-
+  const { currentUser } = useSelector(state => state.auth);
+  
   return (
     <div className="pt-24 px-6 min-h-screen bg-gray-50">
       <div className="container mx-auto max-w-4xl">
@@ -19,18 +14,20 @@ const Profile = () => {
           <div className="bg-gradient-to-r from-orange-400 to-orange-600 px-8 py-12">
             <div className="flex flex-col md:flex-row items-center md:items-end gap-6">
               <div className="relative">
-                <img
-                  src={avatar}
-                  alt="Profile"
-                  className="w-32 h-32 rounded-full border-4 border-white shadow-lg"
+                <Avatar
+                  name={currentUser.fullName}
+                  size="w-32 h-32"
+                  borderClass="border-4 border-white"
+                  className="shadow-lg"
+                  fontSize='text-lg'
                 />
                 <button className="absolute bottom-2 right-2 bg-white rounded-full p-2 shadow-lg hover:shadow-xl transition-shadow">
                   <HiPencil className="w-4 h-4 text-gray-600" />
                 </button>
               </div>
               <div className="text-center md:text-left text-white">
-                <h1 className="text-3xl font-bold mb-2">{userInfo.fullName}</h1>
-                <p className="text-orange-100 mb-1">{userInfo.userType}</p>
+                <h1 className="text-3xl font-bold mb-2">{currentUser.fullName}</h1>
+                <p className="text-orange-100 mb-1">{currentUser.role}</p>
                 <p className="text-orange-100 text-sm">Member since January 2024</p>
               </div>
               <div className="md:ml-auto">
@@ -52,7 +49,7 @@ const Profile = () => {
                   <HiUser className="w-4 h-4 mr-2" />
                   Full Name
                 </label>
-                <p className="px-4 py-3 bg-gray-50 rounded-lg text-gray-900">{userInfo.fullName}</p>
+                <p className="px-4 py-3 bg-gray-50 rounded-lg text-gray-900">{currentUser.fullName}</p>
               </div>
 
               {/* Email */}
@@ -61,7 +58,7 @@ const Profile = () => {
                   <HiMail className="w-4 h-4 mr-2" />
                   Email Address
                 </label>
-                <p className="px-4 py-3 bg-gray-50 rounded-lg text-gray-900">{userInfo.email}</p>
+                <p className="px-4 py-3 bg-gray-50 rounded-lg text-gray-900">{currentUser.email}</p>
               </div>
 
               {/* Phone */}
@@ -70,7 +67,7 @@ const Profile = () => {
                   <HiPhone className="w-4 h-4 mr-2" />
                   Phone Number
                 </label>
-                <p className="px-4 py-3 bg-gray-50 rounded-lg text-gray-900">{userInfo.phone}</p>
+                <p className="px-4 py-3 bg-gray-50 rounded-lg text-gray-900">{currentUser.phoneNumber}</p>
               </div>
 
               {/* User Type */}
@@ -79,7 +76,7 @@ const Profile = () => {
                   <HiUser className="w-4 h-4 mr-2" />
                   Account Type
                 </label>
-                <p className="px-4 py-3 bg-gray-50 rounded-lg text-gray-900">{userInfo.userType}</p>
+                <p className="px-4 py-3 bg-gray-50 rounded-lg text-gray-900">{currentUser.role}</p>
               </div>
 
               {/* Address */}
@@ -88,7 +85,7 @@ const Profile = () => {
                   <HiLocationMarker className="w-4 h-4 mr-2" />
                   Address
                 </label>
-                <p className="px-4 py-3 bg-gray-50 rounded-lg text-gray-900">{userInfo.address}</p>
+                <p className="px-4 py-3 bg-gray-50 rounded-lg text-gray-900">{currentUser.address}</p>
               </div>
             </div>
           </div>
