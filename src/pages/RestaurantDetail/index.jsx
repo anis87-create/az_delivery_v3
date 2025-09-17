@@ -1,12 +1,14 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useParams } from 'react-router'
 import { FaStar, FaArrowLeft, FaPlus, FaMinus, FaHeart, FaPaperPlane } from 'react-icons/fa'
-import { MdAccessTime, MdLocationOn } from 'react-icons/md'
+import { MdAccessTime } from 'react-icons/md'
 import { Link } from 'react-router'
 import { getRestaurantById } from '../../data/restaurants'
 import { getItemsByRestaurantId } from '../../data/items'
 import { getCommentsByRestaurantId, getTotalCommentsCount } from '../../data/comments'
-import avatar from '../../assets/images/avatar.png'
+import Avatar from '../../components/common/Avatar'
+import { useSelector } from 'react-redux'
+import CartButton from '../../components/forms/CartButton'
 
 const RestaurantDetail = () => {
   const { id } = useParams()
@@ -14,7 +16,15 @@ const RestaurantDetail = () => {
   const items = getItemsByRestaurantId(parseInt(id))
   const comments = getCommentsByRestaurantId(parseInt(id))
   const totalComments = getTotalCommentsCount(parseInt(id))
+  const { currentUser } = useSelector (state => state.auth);
+  const { cartItems } = useSelector(state => state.cart);
+  const [buttonHidden, setButtonHidden] = useState(false);
+  
+  const addItem = (id) => {
+    const itemFound = items.find(item => item.id === id);
 
+    setButtonHidden(true);
+  }
   if (!restaurant) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -132,10 +142,10 @@ const RestaurantDetail = () => {
                         <FaPlus className="text-white text-sm" />
                       </button>
                     </div>
-                    
-                    <button className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors">
-                      Ajouter au panier
-                    </button>
+                    <CartButton
+                      item={item}
+                      addItem={addItem}
+                    />
                   </div>
                 </div>
               ))}
@@ -155,11 +165,10 @@ const RestaurantDetail = () => {
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
             <div className="flex items-center gap-4 mb-4">
               {/* Avatar utilisateur connecté */}
-              <img 
-                src={avatar} 
-                alt="Votre avatar"
-                className="w-12 h-12 rounded-full object-cover border-2 border-green-500"
-              />
+    
+              <Avatar name={`${currentUser.fullName}`} size="w-[40px] h-[40px]" 
+                     fontSize='text-xs'
+                    />
               <div>
                 <h3 className="text-lg font-semibold text-gray-800">Laisser un avis</h3>
                 <p className="text-sm text-gray-600">En tant que Anis Zarrouk</p>
