@@ -8,7 +8,7 @@ import { getItemsByRestaurantId } from '../../data/items'
 import { getCommentsByRestaurantId, getTotalCommentsCount } from '../../data/comments'
 import Avatar from '../../components/common/Avatar'
 import { useSelector } from 'react-redux'
-import CartButton from '../../components/forms/CartButton'
+import QuantityContainer from '../../components/layout/QuantityContainer'
 
 const RestaurantDetail = () => {
   const { id } = useParams()
@@ -17,12 +17,9 @@ const RestaurantDetail = () => {
   const comments = getCommentsByRestaurantId(parseInt(id))
   const totalComments = getTotalCommentsCount(parseInt(id))
   const { currentUser } = useSelector (state => state.auth);
-  const { cartItems } = useSelector(state => state.cart);
   const [buttonHidden, setButtonHidden] = useState(false);
   
   const addItem = (id) => {
-    const itemFound = items.find(item => item.id === id);
-
     setButtonHidden(true);
   }
   if (!restaurant) {
@@ -128,25 +125,10 @@ const RestaurantDetail = () => {
                   </div>
                   
                   {/* Contrôles de quantité */}
-                  <div className="mt-3 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <button className="w-10 h-10 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center transition-colors">
-                        <FaMinus className="text-gray-600 text-sm" />
-                      </button>
-                      
-                      <span className="text-lg font-semibold text-gray-800 min-w-[2rem] text-center">
-                        0
-                      </span>
-                      
-                      <button className="w-10 h-10 bg-orange-500 hover:bg-orange-600 rounded-full flex items-center justify-center transition-colors">
-                        <FaPlus className="text-white text-sm" />
-                      </button>
-                    </div>
-                    <CartButton
-                      item={item}
-                      addItem={addItem}
-                    />
-                  </div>
+                  <QuantityContainer
+                   addItem={addItem}
+                   item={item}
+                  />
                 </div>
               ))}
             </div>

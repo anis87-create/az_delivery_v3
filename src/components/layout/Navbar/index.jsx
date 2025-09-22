@@ -10,6 +10,10 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const { currentUser } = useSelector(state => state.auth);
+  const { cartItems } = useSelector(state => state.cart);
+
+  const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -57,10 +61,15 @@ const Navbar = () => {
                   </Link> 
                 </li>
                 <li className='inline-block align-middle'>
-                  <Link to="/cart" id="cart" className="nav-link cart-link flex items-center p-[10px] text-green-500 hover:text-green-600 transition-colors">
+                  <Link to="/cart" id="cart" className="nav-link cart-link flex items-center p-[10px] text-green-500 hover:text-green-600 transition-colors relative">
                     <HiShoppingCart className="w-5 h-5 sm:mr-1.5" />
+                    {totalQuantity > 0 && (
+                      <span className="absolute -top-1 -right-2 bg-green-500 text-white text-xs rounded-full min-w-[20px] h-5 flex items-center justify-center">
+                        {totalQuantity}
+                      </span>
+                    )}
                     <span className='hidden md:inline md:ml-[6px]'>Cart</span>
-                  </Link> 
+                  </Link>
                 </li>
                 <li className='inline-block align-middle'>
                   <a href="/src/pages/orders.html" className='flex items-center p-[10px] hover:text-green-500 transition-colors'>
@@ -120,8 +129,13 @@ const Navbar = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/cart" className='flex items-center p-3 text-green-500 hover:bg-gray-50 rounded-lg transition-colors'>
+                <Link to="/cart" className='flex items-center p-3 text-green-500 hover:bg-gray-50 rounded-lg transition-colors relative'>
                   <HiShoppingCart className="w-5 h-5 mr-3" />
+                  {totalQuantity > 0 && (
+                    <span className="absolute top-0 -right-1 bg-green-500 text-white text-xs rounded-full min-w-[20px] h-5 flex items-center justify-center">
+                      {totalQuantity}
+                    </span>
+                  )}
                   <span>Cart</span>
                 </Link>
               </li>
