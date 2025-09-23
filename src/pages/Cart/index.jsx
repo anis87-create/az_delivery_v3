@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { HiTrash } from 'react-icons/hi'
 import {  useDispatch, useSelector } from 'react-redux';
 import RestaurantDetailCartItem from '../../components/layout/RestaurantDetailCartItem';
@@ -6,35 +6,25 @@ import { Link } from 'react-router';
 import { usdToTnd } from '../../utils/helpers';
 import { resetCart } from '../../store/features/cartSlice';
 import Swal from 'sweetalert2';
+import { DELIVERY_FREE, TAX } from '../../utils/constantes';
+
+/**
+ * Cart page component that displays shopping cart items and order summary
+ * Features:
+ * - Display cart items with quantity controls
+ * - Show order summary with pricing breakdown
+ * - Clear cart functionality with confirmation
+ * - Empty cart state with call-to-action
+ */
 
 const Cart = () => {
-  // Sample cart items data
-  /*const cartItems = [
-    {
-      id: 1,
-      name: "Margherita Pizza",
-      restaurant: "Pizza Palace",
-      price: 12.99,
-      quantity: 2,
-      image: "https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?w=80&h=80&fit=crop&crop=center"
-    },
-    {
-      id: 2,
-      name: "Chicken Burger",
-      restaurant: "Burger House",
-      price: 8.50,
-      quantity: 1,
-      image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=80&h=80&fit=crop&crop=center"
-    }
-  ];*/
-  const { cartItems } = useSelector(state => state.cart);
-  const subtotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-  const deliveryFee = 1.99;
-  const tax = 0.76;
-  const total = subtotal + deliveryFee + tax;
-  // Convert USD to TND (approximate rate: 1 USD = 3.1 TND)
   const dispatch  = useDispatch();
 
+  // Get cart state from Redux store
+  const { cartItems, subTotalPrice } = useSelector(state => state.cart);
+
+  // Calculate total price including delivery and tax
+  const total = subTotalPrice + DELIVERY_FREE + TAX;
 
   return (
     <main className='mt-[8.125rem] flex-1'>
@@ -53,8 +43,11 @@ const Cart = () => {
                 cancelButtonText: "no",
                 showCancelButton: true,
                 showCloseButton: true
-              }).then(() => {
-                dispatch(resetCart())
+              }).then((result) => {
+                // Only clear cart if user confirms
+                if (result.isConfirmed) {
+                  dispatch(resetCart())
+                }
               });
            }}
           >
@@ -117,15 +110,15 @@ const Cart = () => {
               <div className='space-y-3 mb-4'>
                 <div className='flex justify-between'>
                   <span className='text-gray-600'>Subtotal</span>
-                  <span className='font-semibold'>{usdToTnd(subtotal)} TND</span>
+                  <span className='font-semibold'>{usdToTnd(subTotalPrice)} TND</span>
                 </div>
                 <div className='flex justify-between'>
                   <span className='text-gray-600'>Delivery Fee</span>
-                  <span className='font-semibold'>{usdToTnd(deliveryFee)} TND</span>
+                  <span className='font-semibold'>{usdToTnd(DELIVERY_FREE)} TND</span>
                 </div>
                 <div className='flex justify-between'>
                   <span className='text-gray-600'>Tax</span>
-                  <span className='font-semibold'>{usdToTnd(tax)} TND</span>
+                  <span className='font-semibold'>{usdToTnd(TAX)} TND</span>
                 </div>
               </div>
 

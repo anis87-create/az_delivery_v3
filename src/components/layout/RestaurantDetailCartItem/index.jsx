@@ -1,22 +1,52 @@
 import { restaurants } from '../../../data/restaurants';
 import { useDispatch } from 'react-redux';
-import { deleteItem, updateQuantity } from '../../../store/features/cartSlice';
+import { deleteItem, getSubTotalPrice, updateQuantity } from '../../../store/features/cartSlice';
 import { usdToTnd } from '../../../utils/helpers';
+import { useCallback, useState } from 'react';
+
+/**
+ * Cart item component that displays individual food items in the cart
+ * Features:
+ * - Display item details (name, image, price, restaurant)
+ * - Quantity controls (increment/decrement)
+ * - Delete item functionality
+ * - Automatic subtotal recalculation
+ */
 
 const RestaurantDetailCartItem = ({item}) => {
    const dispatch = useDispatch();
-   const findRestaurantNameById = (id) => restaurants.find(restaurant => restaurant.id === id).name;
 
+   // Helper function to find restaurant name by ID
+   const findRestaurantNameById = (id) => restaurants.find(restaurant => restaurant.id === id)?.name || 'Unknown Restaurant';
+
+   // Memoized restaurant name lookup for performance
+   const findRestaurantName = useCallback(() => {
+      return findRestaurantNameById(item.restaurantId);
+   }, [item.restaurantId]);
+   /**
+    * Handle quantity decrement
+    * If quantity is 1, remove item from cart
+    * Otherwise, decrease quantity by 1
+    */
    const decrementQuantity = () => {
        if(item.quantity === 1){
+          // Remove item if quantity would become 0
           dispatch(deleteItem(item));
+          dispatch(getSubTotalPrice());
         }else {
+         // Decrease quantity by 1
          dispatch(updateQuantity({...item, quantity: item.quantity - 1}));
+         dispatch(getSubTotalPrice());
      }
    }
 
+   /**
+    * Handle quantity increment
+    * Increase quantity by 1 and recalculate subtotal
+    */
    const incrementQuantity = () => {
         dispatch(updateQuantity({...item, quantity: item.quantity + 1}));
+        dispatch(getSubTotalPrice());
     }
   return (
     <div key={item.id} className='flex items-center gap-4 p-4 border rounded-lg'>
@@ -30,7 +60,7 @@ const RestaurantDetailCartItem = ({item}) => {
       {/* Item Details */}
       <div className='flex-1'>
         <h3 className='font-semibold text-gray-900'>{item.name}</h3>
-        <p className='text-gray-600 text-sm'>{findRestaurantNameById(item.restaurantId)}</p>
+        <p className='text-gray-600 text-sm'>{findRestaurantName()}</p>
         <p className='text-orange-500 font-semibold'>{usdToTnd(item.price)} TND</p>
       </div>
 
@@ -49,7 +79,12 @@ const RestaurantDetailCartItem = ({item}) => {
         >
           <span className='text-white text-sm'>+</span>
         </button>
-        <button className='ml-2 text-orange-500 hover:text-orange-600 transition-colors' onClick={() => dispatch(deleteItem(item))}>
+        {/* Delete item button */}
+        <button
+          className='ml-2 text-orange-500 hover:text-orange-600 transition-colors'
+          onClick={() => dispatch(deleteItem(item))}
+          aria-label="Delete item"
+        >
           🗑️
         </button>
       </div>
