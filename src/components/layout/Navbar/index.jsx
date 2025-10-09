@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import logo from '../../../assets/images/logo.png';
-import { HiHome, HiSearch, HiShoppingCart, HiDocumentText, HiUser, HiCog, HiLogout } from 'react-icons/hi';
+import { HiHome, HiSearch, HiShoppingCart, HiDocumentText, HiUser, HiCog, HiLogout, HiHeart } from 'react-icons/hi';
 import { Link } from 'react-router-dom';
 import Avatar from '../../common/Avatar';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,7 +12,7 @@ const Navbar = () => {
   const { currentUser } = useSelector(state => state.auth);
   const { cartItems } = useSelector(state => state.cart);
 
-  const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+  const totalQuantity = cartItems.filter(item => item.userId === currentUser.id).reduce((acc, item) => acc + item.quantity, 0);
 
 
   const toggleMenu = () => {
@@ -61,6 +61,12 @@ const Navbar = () => {
                   </Link> 
                 </li>
                 <li className='inline-block align-middle'>
+                  <Link to="/favorites" className="nav-link flex items-center p-[10px] hover:text-green-500 transition-colors">
+                    <HiHeart className="w-5 h-5 sm:mr-1.5" />
+                    <span className='hidden md:inline md:ml-[6px]'>Favorites</span>
+                  </Link>
+                </li>
+                <li className='inline-block align-middle'>
                   <Link to="/cart" id="cart" className="nav-link cart-link flex items-center p-[10px] text-green-500 hover:text-green-600 transition-colors relative">
                     <HiShoppingCart className="w-5 h-5 sm:mr-1.5" />
                     {totalQuantity > 0 && (
@@ -72,10 +78,10 @@ const Navbar = () => {
                   </Link>
                 </li>
                 <li className='inline-block align-middle'>
-                  <a href="/src/pages/orders.html" className='flex items-center p-[10px] hover:text-green-500 transition-colors'>
+                  <Link to={`/orders`} className='flex items-center p-[10px] hover:text-green-500 transition-colors'>
                     <HiDocumentText className="w-5 h-5 sm:mr-1.5" />
                     <span className='hidden md:inline md:ml-[6px]'>Orders</span>
-                  </a>
+                  </Link>
                 </li>
                 <li className='flex items-center inline-block align-middle ml-[6px] relative'>
                   <span className='text-sm font-medium text-gray-700 mr-3 bg-gray-100 px-3 py-1 rounded-full'>Hello, {currentUser.fullName}</span>
@@ -126,6 +132,12 @@ const Navbar = () => {
                 <Link to='/search' className="flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors">
                   <HiSearch className="w-5 h-5 mr-3" />
                   <span>Search</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/favorites" className='flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors hover:text-green-500'>
+                  <HiHeart className="w-5 h-5 mr-3" />
+                  <span>Favorites</span>
                 </Link>
               </li>
               <li>

@@ -1,23 +1,35 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
-import { FaStar, FaArrowLeft, FaPlus, FaMinus, FaHeart, FaPaperPlane } from 'react-icons/fa'
+import { FaStar, FaArrowLeft, FaPlus, FaMinus, FaHeart, FaPaperPlane, FaTrash } from 'react-icons/fa'
 import { MdAccessTime } from 'react-icons/md'
 import { Link } from 'react-router'
 import { getRestaurantById } from '../../data/restaurants'
 import { getItemsByRestaurantId } from '../../data/items'
 import { getCommentsByRestaurantId, getTotalCommentsCount } from '../../data/comments'
 import Avatar from '../../components/common/Avatar'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import QuantityContainer from '../../components/layout/QuantityContainer'
+import { addComment, removeComment, resetComments, toggleLike } from '../../store/features/commentSlice'
 
 const RestaurantDetail = () => {
   const { id } = useParams()
   const restaurant = getRestaurantById(parseInt(id))
   const items = getItemsByRestaurantId(parseInt(id))
-  const comments = getCommentsByRestaurantId(parseInt(id))
+  //const comments = getCommentsByRestaurantId(parseInt(id))
   const totalComments = getTotalCommentsCount(parseInt(id))
   const { currentUser } = useSelector (state => state.auth);
+  const { comments } = useSelector(state => state.comment);
+  const { users } = useSelector(state => state.auth);
   const [buttonHidden, setButtonHidden] = useState(false);
+  const dispatch = useDispatch();
+  const [commentContent, setCommentContent] = useState('');
+  const [rateCount, setRateCount] = useState(0);
+  const [commentsFiltredByRestaurant, setCommentsFiltredByRestaurant] = useState([]);
+  
+  useEffect(() => {
+    //dispatch(resetComments());
+    setCommentsFiltredByRestaurant(comments.filter(comment => comment.restaurantId === restaurant.id));
+  }, [comments, restaurant.id]);
   
   const addItem = (id) => {
     setButtonHidden(true);
@@ -41,7 +53,23 @@ const RestaurantDetail = () => {
     }
     acc[item.category].push(item)
     return acc
-  }, {})
+  }, {});
+
+  const reply = (comment) => {
+     dispatch(addComment(comment));
+     setCommentContent('');
+     setRateCount(0);
+  }
+  const handleChangeComment = (e) => {
+    setCommentContent(e.target.value);
+  }
+
+  const findCommentUserName = (comment) => {
+    return users?.find(user => comment?.userId ===  user?.id).fullName;
+  }
+
+
+
 
   return (
     <div className="min-h-screen bg-gray-50 mt-[8.125rem]">
@@ -139,7 +167,7 @@ const RestaurantDetail = () => {
         <div className="mt-12">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-800">
-              Avis clients ({totalComments})
+              Avis clients ({commentsFiltredByRestaurant.length})
             </h2>
           </div>
 
@@ -153,7 +181,7 @@ const RestaurantDetail = () => {
                     />
               <div>
                 <h3 className="text-lg font-semibold text-gray-800">Laisser un avis</h3>
-                <p className="text-sm text-gray-600">En tant que Anis Zarrouk</p>
+                <p className="text-sm text-gray-600">En tant que {currentUser?.fullName}</p>
               </div>
             </div>
             
@@ -164,15 +192,40 @@ const RestaurantDetail = () => {
                   Votre note
                 </label>
                 <div className="flex items-center gap-1">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
+                  {[1, 2, 3, 4, 5].map((star, index) => {
+                    if(index >= rateCount){
+                      return(
+                         <button
                       key={star}
                       type="button"
                       className="text-2xl hover:scale-110 transition-transform"
+                      onClick={() => {
+                        if(star === index+1){
+                          setRateCount(c => c  + 1);
+                        }
+                      }}
                     >
                       <FaStar className="text-gray-300 hover:text-yellow-500" />
                     </button>
-                  ))}
+                      )
+                    }else {
+                      return(
+                         <button
+                      key={star}
+                      type="button"
+                      className="text-2xl hover:scale-110 transition-transform"
+                      onClick={() => {
+                        if(star === index+1){
+                        setRateCount(c => c - 1);
+                        }
+                      }}
+                    >
+                      <FaStar className="text-yellow-500 hover:text-gray-300" />
+                    </button>
+                      )
+                    }
+                   
+                  })}
                   <span className="ml-2 text-sm text-gray-600">Cliquez pour noter</span>
                 </div>
               </div>
@@ -186,6 +239,8 @@ const RestaurantDetail = () => {
                   rows="4"
                   placeholder="Partagez votre expérience..."
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-colors resize-none"
+                  onChange={handleChangeComment}
+                  value={commentContent}
                 ></textarea>
               </div>
 
@@ -194,6 +249,17 @@ const RestaurantDetail = () => {
                 <button 
                   type="submit"
                   className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition-colors flex items-center gap-2"
+                  onClick={ (e) => {
+                    e.preventDefault();
+                    reply({
+                    restaurantId: restaurant.id,
+                    userId: currentUser.id,
+                    userName: currentUser.fullName,
+                    userAvatar: currentUser.avatar,
+                    comment: commentContent,
+                    likes: 0,
+                    rating: rateCount
+                  })}}
                 >
                   <FaPaperPlane className="text-sm" />
                   Publier l'avis
@@ -202,25 +268,34 @@ const RestaurantDetail = () => {
             </form>
           </div>
           
-          {comments.length > 0 ? (
+          {commentsFiltredByRestaurant.length > 0 ? (
             <div className="space-y-6">
-              {comments.map((comment) => (
+              {commentsFiltredByRestaurant?.map((comment) => (
                 <div 
                   key={comment.id}
                   className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
                 >
                   {/* Header du commentaire */}
                   <div className="flex items-start gap-4 mb-4">
-                    <img 
-                      src={comment.userAvatar} 
-                      alt={comment.userName}
-                      className="w-12 h-12 rounded-full object-cover"
-                    />
+                    {users?.find(user => comment?.userId === user?.id)?.avatar ? (
+                      <img
+                        src={users.find(user => comment?.userId === user?.id).avatar}
+                        alt={findCommentUserName(comment)}
+                        className="w-[32px] h-[32px] rounded-full object-cover"
+                      />
+                    ) : (
+                      <Avatar
+                        name={`${findCommentUserName(comment)}`}
+                        size="w-[32px] h-[32px]"
+                        fontSize='text-xs'
+                      />
+                    )}
+  
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="font-semibold text-gray-800">{comment.userName}</h4>
                         <span className="text-sm text-gray-500">
-                          {new Date(comment.date).toLocaleDateString('fr-FR', {
+                          {new Date(comment.created_at).toLocaleDateString('fr-FR', {
                             year: 'numeric',
                             month: 'long',
                             day: 'numeric'
@@ -246,18 +321,37 @@ const RestaurantDetail = () => {
                       </div>
                     </div>
                   </div>
-                  
                   {/* Contenu du commentaire */}
                   <p className="text-gray-700 mb-4 leading-relaxed">
                     {comment.comment}
                   </p>
                   
                   {/* Actions */}
-                  <div className="flex items-center gap-4 pt-3 border-t border-gray-100">
-                    <button className="flex items-center gap-2 text-gray-500 hover:text-red-500 transition-colors">
+                  <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                    <button className={`flex items-center gap-2 ${comment.likedBy && comment.likedBy.includes(currentUser.id) ? "text-red-500 hover:text-gray-500" : "text-gray-500 hover:text-red-600"} transition-colors`}
+                     onClick={() => {
+                      dispatch(toggleLike({
+                        commentId: comment.id,
+                        userId: currentUser.id
+                      }));
+                    }}
+                    >
+                      <span className="text-sm">{comment.likes>0 ? comment.likes: ''}</span>
                       <FaHeart className="text-sm" />
-                      <span className="text-sm">{comment.helpful}</span>
                     </button>
+
+                  
+                      <button
+                        className="flex items-center gap-2 text-gray-500 hover:text-red-600 transition-colors"
+                        onClick={() => {
+                          dispatch(removeComment({
+                            id: comment.id
+                          }));
+                        }}
+                      >
+                        <FaTrash className="text-sm" />
+                      </button>
+                    
                   </div>
                 </div>
               ))}

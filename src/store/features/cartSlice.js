@@ -66,13 +66,11 @@ export const cartSlice = createSlice({
         */
        resetCart: (state) => {
             // Clear localStorage
-            localStorage.setItem('cartItems', []);
+            localStorage.setItem('cartItems', JSON.stringify([]));
             localStorage.setItem('subTotalPrice', 0);
             // Reset state
+            state.cartItems = [];
             state.subTotalPrice = 0;
-            return {
-                cartItems: []
-            }
         },
         /**
          * Calculate and update the subtotal price

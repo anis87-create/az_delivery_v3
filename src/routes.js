@@ -8,6 +8,8 @@ import Register from './pages/Register';
 import Search from './pages/Search';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
+import Checkout from './pages/Checkout';
+import Orders from './pages/Orders';
 
 export const router = createBrowserRouter([
   {
@@ -38,6 +40,14 @@ export const router = createBrowserRouter([
         path: 'settings',
         element: <Settings />,
       },
+      {
+        path:'checkout',
+        element: <Checkout />
+      },
+      {
+        path: 'orders',
+        element: <Orders />
+      }
     ],
   },
   {

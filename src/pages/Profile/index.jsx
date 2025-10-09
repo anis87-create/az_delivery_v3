@@ -2,10 +2,26 @@ import React from 'react'
 import { HiUser, HiMail, HiPhone, HiLocationMarker, HiPencil } from 'react-icons/hi'
 import Avatar from '../../components/common/Avatar'
 import { useSelector } from 'react-redux'
+import { restaurants } from '../../data/restaurants'
 
 const Profile = () => {
   const { currentUser } = useSelector(state => state.auth);
-  
+  const { cartItems } = useSelector(state => state.cart)
+  const {orders} = useSelector(state => state.order);
+
+  const sumAvg = restaurants.reduce((acc, currentValue) => acc + currentValue.rate, 0);
+  const avgRate = sumAvg/restaurants.length;
+ 
+  const getSumItemsPrice = () => {
+    return cartItems.reduce((acc, currentValue) => acc + currentValue.price, 0);
+  }
+
+  const getOrdersNumberByUser = () => {
+    return orders.filter(order => order.userId === currentUser.id).length;
+  }
+
+ 
+
   return (
     <div className="pt-24 px-6 min-h-screen bg-gray-50">
       <div className="container mx-auto max-w-4xl">
@@ -15,7 +31,7 @@ const Profile = () => {
             <div className="flex flex-col md:flex-row items-center md:items-end gap-6">
               <div className="relative">
                 <Avatar
-                  name={currentUser.fullName}
+                  name={currentUser?.fullName}
                   size="w-32 h-32"
                   borderClass="border-4 border-white"
                   className="shadow-lg"
@@ -95,19 +111,19 @@ const Profile = () => {
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Order Statistics</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 rounded-lg text-center">
-                <p className="text-3xl font-bold">24</p>
+                <p className="text-3xl font-bold">{getOrdersNumberByUser()}</p>
                 <p className="text-blue-100 text-sm">Total Orders</p>
               </div>
               <div className="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-lg text-center">
-                <p className="text-3xl font-bold">$580</p>
+                <p className="text-3xl font-bold">{getSumItemsPrice()} TND</p>
                 <p className="text-green-100 text-sm">Total Spent</p>
               </div>
               <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-6 rounded-lg text-center">
-                <p className="text-3xl font-bold">4.8</p>
+                <p className="text-3xl font-bold">{avgRate}</p>
                 <p className="text-purple-100 text-sm">Avg Rating</p>
               </div>
               <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-6 rounded-lg text-center">
-                <p className="text-3xl font-bold">12</p>
+                <p className="text-3xl font-bold">0</p>
                 <p className="text-orange-100 text-sm">Favorite Items</p>
               </div>
             </div>

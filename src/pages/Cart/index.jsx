@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { HiTrash } from 'react-icons/hi'
 import {  useDispatch, useSelector } from 'react-redux';
 import RestaurantDetailCartItem from '../../components/layout/RestaurantDetailCartItem';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { usdToTnd } from '../../utils/helpers';
-import { resetCart } from '../../store/features/cartSlice';
+import { getSubTotalPrice, resetCart } from '../../store/features/cartSlice';
 import Swal from 'sweetalert2';
 import { DELIVERY_FREE, TAX } from '../../utils/constantes';
 
@@ -22,10 +22,16 @@ const Cart = () => {
 
   // Get cart state from Redux store
   const { cartItems, subTotalPrice } = useSelector(state => state.cart);
-
+  const { currentUser } = useSelector(state => state.auth);
+  const cartItemsByUser =  cartItems.filter(item => item.userId === currentUser.id)
   // Calculate total price including delivery and tax
   const total = subTotalPrice + DELIVERY_FREE + TAX;
+  const navigate = useNavigate();
+  useEffect(() => {
+    dispatch(getSubTotalPrice());
+  }, []);
 
+ 
   return (
     <main className='mt-[8.125rem] flex-1'>
       <div className='container mx-auto w-[90%] py-8'>
@@ -33,7 +39,7 @@ const Cart = () => {
         <div className='flex justify-between items-center mb-8'>
           <h1 className='text-2xl font-bold text-gray-900'>Your Cart</h1>
           {
-            cartItems.length > 0 &&   <button className='flex items-center gap-2 px-4 py-2 border border-orange-500 text-orange-500 rounded-lg hover:bg-orange-50 transition-colors'
+            cartItemsByUser.length > 0 &&   <button className='flex items-center gap-2 px-4 py-2 border border-orange-500 text-orange-500 rounded-lg hover:bg-orange-50 transition-colors'
            onClick={() =>{
             Swal.fire({
                 title: "are you sure to clear all the items ?",
@@ -59,7 +65,7 @@ const Cart = () => {
         </div>
 
         {/* Main Content */}
-        {cartItems.length === 0 ? (
+        {cartItemsByUser.length === 0 ? (
           /* Empty Cart State */
           <div className='flex flex-col items-center justify-center py-16'>
             <div className='text-center'>
@@ -94,7 +100,7 @@ const Cart = () => {
               <h2 className='text-xl font-semibold mb-6'>Order Items</h2>
 
               <div className='space-y-4'>
-                {cartItems.map((item) => (
+                {cartItemsByUser.map((item) => (
                   <RestaurantDetailCartItem
                     key={item.id}
                     item={item}
@@ -110,15 +116,15 @@ const Cart = () => {
               <div className='space-y-3 mb-4'>
                 <div className='flex justify-between'>
                   <span className='text-gray-600'>Subtotal</span>
-                  <span className='font-semibold'>{usdToTnd(subTotalPrice)} TND</span>
+                  <span className='font-semibold'>{subTotalPrice} TND</span>
                 </div>
                 <div className='flex justify-between'>
                   <span className='text-gray-600'>Delivery Fee</span>
-                  <span className='font-semibold'>{usdToTnd(DELIVERY_FREE)} TND</span>
+                  <span className='font-semibold'>{DELIVERY_FREE} TND</span>
                 </div>
                 <div className='flex justify-between'>
                   <span className='text-gray-600'>Tax</span>
-                  <span className='font-semibold'>{usdToTnd(TAX)} TND</span>
+                  <span className='font-semibold'>{TAX} TND</span>
                 </div>
               </div>
 
@@ -126,10 +132,14 @@ const Cart = () => {
 
               <div className='flex justify-between text-lg font-bold mb-6'>
                 <span>Total</span>
-                <span>{usdToTnd(total)} TND</span>
+                <span>{total} TND</span>
               </div>
 
-              <button className='w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors'>
+              <button className='w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors'
+               onClick={() => {
+                navigate('/checkout')
+               }}
+              >
                 Proceed to Checkout
               </button>
             </div>

@@ -1,5 +1,5 @@
 import React from 'react'
-import { FaStar, FaClock, FaFire } from 'react-icons/fa'
+import { FaStar, FaClock, FaFire, FaHeart } from 'react-icons/fa'
 import { MdAccessTime } from 'react-icons/md'
 
 const SpecialOffer = ({ offer }) => {
@@ -14,12 +14,21 @@ const SpecialOffer = ({ offer }) => {
 
       <div className="relative overflow-hidden">
         <div className="absolute w-full h-full top-0 left-0 bg-black/20 group-hover:bg-black/40 transition-all duration-300 z-10"></div>
-        <img 
-          src={offer.image} 
-          alt={offer.name} 
-          className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110" 
+        <img
+          src={offer.image}
+          alt={offer.name}
+          className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110"
         />
-        
+
+        {/* Bouton favori */}
+        <div className="absolute top-3 right-3 z-20">
+          <button className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white hover:scale-110 transition-all duration-300"
+            aria-label="Add to favorites"
+          >
+            <FaHeart className="text-orange-600 hover:text-orange-700 text-sm transition-colors" />
+          </button>
+        </div>
+
         {/* Temps de préparation */}
         <div className="absolute bottom-3 right-3 z-20">
           <div className='bg-white/90 backdrop-blur-sm py-1 px-2 rounded-full flex items-center gap-1 shadow-lg'>

@@ -7,11 +7,12 @@ const QuantityContainer = ({item, addItem}) => {
   const [counter, setCounter] = useState(1); 
   const dispatch = useDispatch();
   const {cartItems} = useSelector(state => state.cart);
+  const {currentUser} = useSelector(state => state.auth) 
   useEffect(() => {
     //dispatch(resetCart());
   }, [dispatch]);
   useEffect(() => {
-    const itemFound = cartItems.find(i => i.id === item?.id);    
+    const itemFound = cartItems.find(i => i.id === item?.id && item.userId === currentUser.id);    
     if(itemFound){
       setIsHidden(true);
       setCounter(itemFound?.quantity);
@@ -25,7 +26,7 @@ const QuantityContainer = ({item, addItem}) => {
     setIsHidden(true);
     addItem(item.id);
     setCounter(1);
-    dispatch(addToCart({id: item.id, name: item.name, quantity: counter, restaurantId: item.restaurantId, image: item.image, category: item.category, price: item.price}));
+    dispatch(addToCart({id: item.id,userId: currentUser.id,  name: item.name, quantity: counter, restaurantId: item.restaurantId, image: item.image, category: item.category, price: item.price}));
 
   };
   const incrementCounter = () => {

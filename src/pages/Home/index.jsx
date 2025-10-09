@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import sliderImg from '../../../src/assets/images/slider_img.avif';
 import { HiChevronLeft, HiChevronRight } from 'react-icons/hi';
 import Category from '../../components/layout/Category';
@@ -8,6 +9,8 @@ import PopularDish from '../../components/layout/PopularDish';
 import SpecialOffer from '../../components/layout/SpecialOffer';
 import { restaurants } from '../../data/restaurants';
 import { trendingDishes, topRatedRestaurants, newRestaurants, specialOffers, recommendedForYou } from '../../data/trending';
+import { clearOrders } from '../../store/features/orderSlice';
+import { useDispatch } from 'react-redux';
 
 const categories = [
   {
@@ -90,6 +93,8 @@ const sliderImages = [
 
 const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   
   // Ensure currentSlide is always valid
   const safeCurrentSlide = currentSlide >= 0 && currentSlide < sliderImages.length ? currentSlide : 0;
@@ -106,6 +111,9 @@ const Home = () => {
       setCurrentSlide((prev) => (prev - 1 + sliderImages.length) % sliderImages.length);
     }
   };
+  useEffect(() => {
+   //dispatch(clearOrders());
+  }, []);
   return (
     <main className='mt-[8.125rem] flex-1'>
        <section className='mt-[20px] mb-[60px] my-8 mx-0 md:my-[3rem] md:mx-0 lg:my-16 lg:mx-0'>
@@ -187,7 +195,10 @@ const Home = () => {
                </h2>
                <p className="text-gray-600 text-sm mt-1">Most popular dishes right now</p>
              </div>
-             <button className="text-orange-500 hover:text-orange-600 font-medium text-sm sm:text-base transition-colors duration-200">
+             <button
+               onClick={() => navigate('/search?category=trending')}
+               className="text-orange-500 hover:text-orange-600 font-medium text-sm sm:text-base transition-colors duration-200"
+             >
                View All
              </button>
            </div>
@@ -212,7 +223,10 @@ const Home = () => {
                </h2>
                <p className="text-gray-600 text-sm mt-1">Save on your favorite dishes</p>
              </div>
-             <button className="text-orange-500 hover:text-orange-600 font-medium text-sm sm:text-base transition-colors duration-200">
+             <button
+               onClick={() => navigate('/search?category=offers')}
+               className="text-orange-500 hover:text-orange-600 font-medium text-sm sm:text-base transition-colors duration-200"
+             >
                View All
              </button>
            </div>
@@ -237,7 +251,10 @@ const Home = () => {
                </h2>
                <p className="text-gray-600 text-sm mt-1">Highest rated restaurants by our customers</p>
              </div>
-             <button className="text-orange-500 hover:text-orange-600 font-medium text-sm sm:text-base transition-colors duration-200">
+             <button
+               onClick={() => navigate('/search?category=top-rated')}
+               className="text-orange-500 hover:text-orange-600 font-medium text-sm sm:text-base transition-colors duration-200"
+             >
                View All
              </button>
            </div>
@@ -268,7 +285,10 @@ const Home = () => {
                </h2>
                <p className="text-gray-600 text-sm mt-1">Discover our newest restaurant partners</p>
              </div>
-             <button className="text-orange-500 hover:text-orange-600 font-medium text-sm sm:text-base transition-colors duration-200">
+             <button
+               onClick={() => navigate('/search?category=new')}
+               className="text-orange-500 hover:text-orange-600 font-medium text-sm sm:text-base transition-colors duration-200"
+             >
                View All
              </button>
            </div>
@@ -300,7 +320,10 @@ const Home = () => {
                </h2>
                <p className="text-gray-600 text-sm mt-1">Personalized selection based on your taste</p>
              </div>
-             <button className="text-orange-500 hover:text-orange-600 font-medium text-sm sm:text-base transition-colors duration-200">
+             <button
+               onClick={() => navigate('/search?category=recommended')}
+               className="text-orange-500 hover:text-orange-600 font-medium text-sm sm:text-base transition-colors duration-200"
+             >
                View All
              </button>
            </div>
@@ -327,7 +350,10 @@ const Home = () => {
        <div className='flex flex-col my-8 mx-0 md:my-12 md:mx-0 lg:my-[4rem] lg:mx-0'>
            <div className="flex justify-between items-center mb-4 sm:mb-6">
              <h2 className='text-xl sm:text-2xl font-bold'>Quick Bites</h2>
-             <button className="text-orange-500 hover:text-orange-600 font-medium text-sm sm:text-base transition-colors duration-200">
+             <button
+               onClick={() => navigate('/search?category=quick-bites')}
+               className="text-orange-500 hover:text-orange-600 font-medium text-sm sm:text-base transition-colors duration-200"
+             >
                View All
              </button>
            </div>
@@ -354,7 +380,10 @@ const Home = () => {
        <div className='flex flex-col my-8 mx-0 md:my-12 md:mx-0 lg:my-[4rem] lg:mx-0'>
            <div className="flex justify-between items-center mb-4 sm:mb-6">
              <h2 className='text-xl sm:text-2xl font-bold'>Featured Restaurants</h2>
-             <button className="text-orange-500 hover:text-orange-600 font-medium text-sm sm:text-base transition-colors duration-200">
+             <button
+               onClick={() => navigate('/search?category=restaurants')}
+               className="text-orange-500 hover:text-orange-600 font-medium text-sm sm:text-base transition-colors duration-200"
+             >
                View All
              </button>
            </div>
