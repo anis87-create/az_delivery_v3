@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import logo from '../../../assets/images/logo.png';
-import { HiHome, HiSearch, HiShoppingCart, HiDocumentText, HiUser, HiCog, HiLogout, HiHeart } from 'react-icons/hi';
+import { HiOutlineHome, HiOutlineMagnifyingGlass, HiOutlineShoppingCart, HiOutlineDocumentText, HiOutlineUser, HiOutlineCog, HiOutlineArrowRightOnRectangle, HiOutlineHeart } from 'react-icons/hi2';
 import { Link } from 'react-router-dom';
 import Avatar from '../../common/Avatar';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,9 +11,10 @@ const Navbar = () => {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const { currentUser } = useSelector(state => state.auth);
   const { cartItems } = useSelector(state => state.cart);
+  const { favorites } = useSelector(state => state.favorites);
 
   const totalQuantity = cartItems.filter(item => item.userId === currentUser.id).reduce((acc, item) => acc + item.quantity, 0);
-
+  const totalFavorites = favorites.filter(favorite => favorite.userId === currentUser.id).length;
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -50,25 +51,30 @@ const Navbar = () => {
               <ul className='flex items-center'>
                 <li className='inline-block align-middle'>
                   <Link to="/" className='flex items-center p-[10px] hover:text-green-500 transition-colors'>
-                    <HiHome className="w-5 h-5 sm:mr-1.5" />
+                    <HiOutlineHome className="w-5 h-5 sm:mr-1.5" />
                     <span className='hidden md:inline md:ml-[6px]'>Home</span>
                   </Link>
                 </li>
                 <li className='inline-block align-middle'>
                   <Link to='/search' className="nav-link search-link flex items-center p-[10px] hover:text-green-500 transition-colors">
-                    <HiSearch className="w-5 h-5 sm:mr-1.5" />
+                    <HiOutlineMagnifyingGlass className="w-5 h-5 sm:mr-1.5" />
                     <span className='hidden md:inline md:ml-[6px]'>Search</span>
                   </Link> 
                 </li>
                 <li className='inline-block align-middle'>
-                  <Link to="/favorites" className="nav-link flex items-center p-[10px] hover:text-green-500 transition-colors">
-                    <HiHeart className="w-5 h-5 sm:mr-1.5" />
+                  <Link to="/favorites" className="nav-link flex items-center p-[10px] hover:text-green-500 transition-colors relative">
+                    <HiOutlineHeart className="w-5 h-5 sm:mr-1.5" />
+                    {totalFavorites > 0 && (
+                      <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full min-w-[20px] h-5 flex items-center justify-center">
+                        {totalFavorites}
+                      </span>
+                    )}
                     <span className='hidden md:inline md:ml-[6px]'>Favorites</span>
                   </Link>
                 </li>
                 <li className='inline-block align-middle'>
                   <Link to="/cart" id="cart" className="nav-link cart-link flex items-center p-[10px] text-green-500 hover:text-green-600 transition-colors relative">
-                    <HiShoppingCart className="w-5 h-5 sm:mr-1.5" />
+                    <HiOutlineShoppingCart className="w-5 h-5 sm:mr-1.5" />
                     {totalQuantity > 0 && (
                       <span className="absolute -top-1 -right-2 bg-green-500 text-white text-xs rounded-full min-w-[20px] h-5 flex items-center justify-center">
                         {totalQuantity}
@@ -79,7 +85,7 @@ const Navbar = () => {
                 </li>
                 <li className='inline-block align-middle'>
                   <Link to={`/orders`} className='flex items-center p-[10px] hover:text-green-500 transition-colors'>
-                    <HiDocumentText className="w-5 h-5 sm:mr-1.5" />
+                    <HiOutlineDocumentText className="w-5 h-5 sm:mr-1.5" />
                     <span className='hidden md:inline md:ml-[6px]'>Orders</span>
                   </Link>
                 </li>
@@ -98,17 +104,17 @@ const Navbar = () => {
                   {isProfileMenuOpen && (
                     <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                       <Link to="/profile" className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
-                        <HiUser className="w-5 h-5 mr-3" />
+                        <HiOutlineUser className="w-5 h-5 mr-3" />
                         <span>Profile</span>
                       </Link>
                       <Link to="/settings" className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
-                        <HiCog className="w-5 h-5 mr-3" />
+                        <HiOutlineCog className="w-5 h-5 mr-3" />
                         <span>Settings</span>
                       </Link>
                       <Link to="/login" className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
                       onClick={() => dispatch(logout())}
                       >
-                        <HiLogout className="w-5 h-5 mr-3" />
+                        <HiOutlineArrowRightOnRectangle className="w-5 h-5 mr-3" />
                         <span>Logout</span>
                       </Link>
                     </div>
@@ -124,25 +130,30 @@ const Navbar = () => {
             <ul className='space-y-2'>
               <li>
                 <Link to="/" className='flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors'>
-                  <HiHome className="w-5 h-5 mr-3" />
+                  <HiOutlineHome className="w-5 h-5 mr-3" />
                   <span>Home</span>
                 </Link>
               </li>
               <li>
                 <Link to='/search' className="flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors">
-                  <HiSearch className="w-5 h-5 mr-3" />
+                  <HiOutlineMagnifyingGlass className="w-5 h-5 mr-3" />
                   <span>Search</span>
                 </Link>
               </li>
               <li>
-                <Link to="/favorites" className='flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors hover:text-green-500'>
-                  <HiHeart className="w-5 h-5 mr-3" />
+                <Link to="/favorites" className='flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors hover:text-green-500 relative'>
+                  <HiOutlineHeart className="w-5 h-5 mr-3" />
+                  {totalFavorites > 0 && (
+                    <span className="absolute top-0 -right-1 bg-red-500 text-white text-xs rounded-full min-w-[20px] h-5 flex items-center justify-center">
+                      {totalFavorites}
+                    </span>
+                  )}
                   <span>Favorites</span>
                 </Link>
               </li>
               <li>
                 <Link to="/cart" className='flex items-center p-3 text-green-500 hover:bg-gray-50 rounded-lg transition-colors relative'>
-                  <HiShoppingCart className="w-5 h-5 mr-3" />
+                  <HiOutlineShoppingCart className="w-5 h-5 mr-3" />
                   {totalQuantity > 0 && (
                     <span className="absolute top-0 -right-1 bg-green-500 text-white text-xs rounded-full min-w-[20px] h-5 flex items-center justify-center">
                       {totalQuantity}
@@ -153,7 +164,7 @@ const Navbar = () => {
               </li>
               <li>
                 <a href="/src/pages/orders.html" className='flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors'>
-                  <HiDocumentText className="w-5 h-5 mr-3" />
+                  <HiOutlineDocumentText className="w-5 h-5 mr-3" />
                   <span>Orders</span>
                 </a>
               </li>

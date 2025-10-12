@@ -10,6 +10,7 @@ import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import Checkout from './pages/Checkout';
 import Orders from './pages/Orders';
+import Favorites from "./pages/Favorites";
 
 export const router = createBrowserRouter([
   {
@@ -47,6 +48,10 @@ export const router = createBrowserRouter([
       {
         path: 'orders',
         element: <Orders />
+      },
+      {
+        path:'favorites',
+        element: <Favorites />
       }
     ],
   },

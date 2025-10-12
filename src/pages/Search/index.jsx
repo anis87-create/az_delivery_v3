@@ -1,15 +1,24 @@
-import React, {useState} from 'react'
+import React, {useState, useMemo} from 'react'
 import { restaurants } from '../../data/restaurants'
 import { Link } from 'react-router-dom'
 import { CATEGORIES } from '../../utils/constantes';
 import CategoryButton from '../../components/ui/CategoryButton';
 import { HiOutlineHeart } from 'react-icons/hi';
+import Restaurant from '../Restaurant';
+import { useSelector } from 'react-redux';
 
 const Search = () => {
   const [restaurantName, setRestaurantName] = useState();
   const [categoryName, setCategoryName] = useState('all');
   const [isActive, setIsActive] = useState(false);
   const [sortOrder, setSortOrder] = useState('');
+ const {favorites} = useSelector(state => state.favorites);
+  const { currentUser } = useSelector(state => state.auth);
+
+  // Optimize favorites lookup with Set for O(1) performance
+  const favoriteIds = useMemo(() => {
+    return new Set(favorites.map(fav => fav.id));
+  }, [favorites]);
 
   const handleChange = (e) => {
      setRestaurantName(e.target.value);
@@ -105,43 +114,17 @@ const Search = () => {
       {/* Restaurants Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {restaurantsFiltred?.map(restaurant => (
-          <div
+          <Restaurant
             key={restaurant.id}
-            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer relative"
-          >
-            <div className="relative">
-              <Link to={`/restaurant/${restaurant.id}`}>
-                <img src={restaurant.img} alt={restaurant.name} className="w-full h-48 object-cover" />
-              </Link>
-
-              {/* Heart Icon */}
-              <button
-                className="absolute top-4 left-4 z-20 bg-white/90 backdrop-blur-sm p-2 rounded-full shadow-lg hover:bg-white hover:scale-110 transition-all duration-300"
-                aria-label="Add to favorites"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <HiOutlineHeart className="text-orange-600 text-xl hover:fill-current" />
-              </button>
-            </div>
-
-            <Link to={`/restaurant/${restaurant.id}`}>
-              <div className="p-4">
-                <h3 className="font-semibold text-lg mb-2">{restaurant.name}</h3>
-                <p className="text-gray-600 text-sm mb-2">{restaurant.tags.join(' • ')}</p>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <span className="text-yellow-500">★</span>
-                    <span className="text-sm ml-1">{restaurant.rate} ({Math.floor(Math.random() * 200) + 50} reviews)</span>
-                  </div>
-                  <span className="text-green-600 font-semibold">${Math.floor(Math.random() * 20) + 10}-${Math.floor(Math.random() * 20) + 25}</span>
-                </div>
-                <div className="flex items-center mt-2 text-sm text-gray-500">
-                  <span>⏱ {restaurant.time} min</span>
-                  <span className="ml-4">🚚 ${(Math.random() * 4 + 1).toFixed(2)} delivery</span>
-                </div>
-              </div>
-            </Link>
-          </div>
+            id={restaurant.id}
+            img={restaurant.img}
+            name={restaurant.name}
+            rate={restaurant.rate}
+            time={restaurant.time}
+            tags={restaurant.tags}
+            userId= {currentUser.id}
+            isActive ={ favoriteIds.has(restaurant.id) }
+          />
         ))
     }
       </div>

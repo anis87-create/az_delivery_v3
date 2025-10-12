@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import sliderImg from '../../../src/assets/images/slider_img.avif';
 import { HiChevronLeft, HiChevronRight } from 'react-icons/hi';
@@ -10,7 +10,8 @@ import SpecialOffer from '../../components/layout/SpecialOffer';
 import { restaurants } from '../../data/restaurants';
 import { trendingDishes, topRatedRestaurants, newRestaurants, specialOffers, recommendedForYou } from '../../data/trending';
 import { clearOrders } from '../../store/features/orderSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { resetFavorites } from '../../store/features/favoritesSlice';
 
 const categories = [
   {
@@ -95,7 +96,14 @@ const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+  const {favorites} = useSelector(state => state.favorites);
+  const { currentUser } = useSelector(state => state.auth);
+
+  // Optimize favorites lookup with Set for O(1) performance
+  const favoriteIds = useMemo(() => {
+    return new Set(favorites.map(fav => fav.id));
+  }, [favorites]);
+
   // Ensure currentSlide is always valid
   const safeCurrentSlide = currentSlide >= 0 && currentSlide < sliderImages.length ? currentSlide : 0;
   const currentSlideData = sliderImages[safeCurrentSlide] || sliderImages[0];
@@ -113,6 +121,7 @@ const Home = () => {
   };
   useEffect(() => {
    //dispatch(clearOrders());
+   //dispatch(resetFavorites())
   }, []);
   return (
     <main className='mt-[8.125rem] flex-1'>
@@ -259,8 +268,8 @@ const Home = () => {
              </button>
            </div>
            <div className='grid lg:grid-cols-3 gap-4 md:grid-cols-2 md:gap-4'>
-            {topRatedRestaurants.map(restaurant => 
-              <RestaurantCard 
+            {topRatedRestaurants.map(restaurant =>
+              <RestaurantCard
                 key={restaurant.id}
                 id={restaurant.id}
                 img={restaurant.img}
@@ -269,6 +278,8 @@ const Home = () => {
                 time={restaurant.time}
                 tags={restaurant.tags}
                 badge={restaurant.badge}
+                userId= {currentUser.id}
+                isActive ={ favoriteIds.has(restaurant.id) }
               />
             )}
            </div>
@@ -293,8 +304,8 @@ const Home = () => {
              </button>
            </div>
            <div className='grid lg:grid-cols-3 gap-4 md:grid-cols-2 md:gap-4'>
-            {newRestaurants.map(restaurant => 
-              <RestaurantCard 
+            {newRestaurants.map(restaurant =>
+              <RestaurantCard
                 key={restaurant.id}
                 id={restaurant.id}
                 img={restaurant.img}
@@ -304,6 +315,8 @@ const Home = () => {
                 tags={restaurant.tags}
                 badge={restaurant.badge}
                 isNew={restaurant.isNew}
+                userId= {currentUser.id}
+                isActive ={ favoriteIds.has(restaurant.id) }
               />
             )}
            </div>
@@ -328,8 +341,8 @@ const Home = () => {
              </button>
            </div>
            <div className='grid lg:grid-cols-3 gap-4 md:grid-cols-2 md:gap-4'>
-            {recommendedForYou.map(restaurant => 
-              <RestaurantCard 
+            {recommendedForYou.map(restaurant =>
+              <RestaurantCard
                 key={restaurant.id}
                 id={restaurant.id}
                 img={restaurant.img}
@@ -338,6 +351,8 @@ const Home = () => {
                 time={restaurant.time}
                 tags={restaurant.tags}
                 reason={restaurant.reason}
+                userId= {currentUser.id}
+                isActive ={ favoriteIds.has(restaurant.id) }
               />
             )}
            </div>
@@ -358,8 +373,8 @@ const Home = () => {
              </button>
            </div>
            <div className='grid lg:grid-cols-3 gap-4 md:grid-cols-2 md:gap-4'>
-            {restaurants.filter(place => place.type === 'quick_bite').slice(0, 3).map(place => 
-              <Restaurant 
+            {restaurants.filter(place => place.type === 'quick_bite').slice(0, 3).map(place =>
+              <Restaurant
                 key={place.id}
                 id={place.id}
                 img={place.img}
@@ -367,6 +382,8 @@ const Home = () => {
                 rate={place.rate}
                 time={place.time}
                 tags={place.tags}
+                userId= {currentUser.id}
+                isActive ={ favoriteIds.has(place.id) }
               />
             )}
            </div>
@@ -388,8 +405,8 @@ const Home = () => {
              </button>
            </div>
            <div className='grid lg:grid-cols-3 gap-4 md:grid-cols-2 md:gap-4'>
-            {restaurants.filter(restaurant => restaurant.type === 'restaurant').slice(0, 6).map(restaurant => 
-              <Restaurant 
+            {restaurants.filter(restaurant => restaurant.type === 'restaurant').slice(0, 6).map(restaurant =>
+              <Restaurant
                 key={restaurant.id}
                 id={restaurant.id}
                 img={restaurant.img}
@@ -397,6 +414,8 @@ const Home = () => {
                 rate={restaurant.rate}
                 time={restaurant.time}
                 tags={restaurant.tags}
+                userId= {currentUser.id}
+                isActive ={ favoriteIds.has(restaurant.id) }
               />
             )}
            </div>

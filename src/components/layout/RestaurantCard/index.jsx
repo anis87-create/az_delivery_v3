@@ -2,9 +2,9 @@ import React from 'react'
 import { Link } from 'react-router'
 import { FaStar } from 'react-icons/fa'
 import { MdAccessTime } from 'react-icons/md'
-import { HiChevronRight, HiHeart, HiOutlineHeart } from 'react-icons/hi'
+import { HiChevronRight, HiOutlineHeart } from 'react-icons/hi'
 
-const RestaurantCard = ({id, img, name, rate, time, tags, badge, reason, isNew}) => {
+const RestaurantCard = React.memo(({id, img, name, rate, time, tags, badge, reason, isNew}) => {
   return (
     <Link to={`/restaurant/${id}`} className='block'>
       <div className='group overflow-hidden shadow-card rounded-2xl my-4 cursor-pointer transition-all duration-300 ease-in-out shadow-[0px_1px_4px_rgba(0,0,0,0.16)] hover:shadow-xl hover:scale-105 hover:-translate-y-2 relative'>
@@ -73,6 +73,8 @@ const RestaurantCard = ({id, img, name, rate, time, tags, badge, reason, isNew})
       </div>
     </Link>
   )
-}
+})
+
+RestaurantCard.displayName = 'RestaurantCard';
 
 export default RestaurantCard

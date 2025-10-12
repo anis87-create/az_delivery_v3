@@ -3,8 +3,13 @@ import { Link } from 'react-router'
 import { FaStar } from 'react-icons/fa';
 import { MdAccessTime } from 'react-icons/md';
 import { HiChevronRight, HiOutlineHeart } from 'react-icons/hi';
+import { useDispatch } from 'react-redux';
+import { addToFavorites, deletFromFavories } from '../../store/features/favoritesSlice';
 
-const index = ({id, img, name, rate, time, tags}) => {
+const Restaurant = React.memo(({id, img, name, rate, time, tags, isActive, userId}) => {
+  
+
+  const dispatch = useDispatch();
   return (
     <Link to={`/restaurant/${id}`} className='block'>
       <div className='group overflow-hidden shadow-card rounded-2xl my-4 cursor-pointer transition-all duration-300 ease-in-out shadow-[0px_1px_4px_rgba(0,0,0,0.16)] hover:shadow-xl hover:scale-105 hover:-translate-y-2'>
@@ -19,9 +24,14 @@ const index = ({id, img, name, rate, time, tags}) => {
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
+            if(!isActive){
+              dispatch(addToFavorites({id, img, name, rate,time,tags, userId}))
+            }else {
+              dispatch(deletFromFavories(id))
+            }
           }}
         >
-          <HiOutlineHeart className="text-orange-600 text-xl hover:fill-current" />
+          <HiOutlineHeart className={`${isActive ?"fill-current hover:text-orange-600":"text-orange-600 text-xl hover:fill-current"} text-orange-600 text-xl hover:fill-current`} />
         </button>
 
         {/* Rating Badge - Top Right */}
@@ -55,6 +65,8 @@ const index = ({id, img, name, rate, time, tags}) => {
     </div>
     </Link>
   )
-}
+})
 
-export default index
+Restaurant.displayName = 'Restaurant';
+
+export default Restaurant;
