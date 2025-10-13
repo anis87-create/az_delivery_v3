@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router'
 import { FaStar } from 'react-icons/fa'
 import { MdAccessTime } from 'react-icons/md'
-import { HiChevronRight, HiOutlineHeart } from 'react-icons/hi'
+import { HiChevronRight } from 'react-icons/hi'
 
 const RestaurantCard = React.memo(({id, img, name, rate, time, tags, badge, reason, isNew}) => {
   return (
@@ -25,14 +25,6 @@ const RestaurantCard = React.memo(({id, img, name, rate, time, tags, badge, reas
         <div className="relative overflow-hidden">
           <div className="absolute w-full h-full top-0 left-0 bg-black/20 group-hover:bg-black/40 transition-all duration-300 z-10"></div>
           <img src={img} alt={name} className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110" />
-
-          {/* Heart Icon - Top Left */}
-          <button
-            className="absolute top-4 left-4 z-20 bg-white/90 backdrop-blur-sm p-2 rounded-full shadow-lg hover:bg-white hover:scale-110 transition-all duration-300"
-            aria-label="Add to favorites"
-          >
-            <HiOutlineHeart className="text-orange-600 text-xl hover:fill-current" />
-          </button>
 
           {/* Rating Badge - Top Right */}
           <div className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-4 group-hover:translate-x-0">

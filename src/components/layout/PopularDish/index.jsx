@@ -1,5 +1,5 @@
 import React from 'react'
-import { FaStar, FaHeart } from 'react-icons/fa'
+import { FaStar } from 'react-icons/fa'
 import { MdAccessTime } from 'react-icons/md'
 
 const PopularDish = ({ dish }) => {
@@ -18,15 +18,6 @@ const PopularDish = ({ dish }) => {
           <span className="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full">
             🔥 Tendance
           </span>
-        </div>
-
-        {/* Bouton favori */}
-        <div className="absolute top-3 right-3 z-20">
-          <button className="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white hover:scale-110 transition-all duration-300"
-            aria-label="Add to favorites"
-          >
-            <FaHeart className="text-orange-600 hover:text-orange-700 text-sm transition-colors" />
-          </button>
         </div>
 
         {/* Temps de préparation */}
