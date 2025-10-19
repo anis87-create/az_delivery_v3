@@ -12,17 +12,21 @@ const QuantityContainer = ({item, addItem}) => {
     //dispatch(resetCart());
   }, [dispatch]);
   useEffect(() => {
-    const itemFound = cartItems.find(i => i.id === item?.id && item.userId === currentUser.id);    
-    if(itemFound){
-      setIsHidden(true);
-      setCounter(itemFound?.quantity);
-    }else {
-      setCounter(1);
+    if (currentUser?.id) {
+      const itemFound = cartItems.find(i => i.id === item?.id && item.userId === currentUser.id);    
+      if(itemFound){
+        setIsHidden(true);
+        setCounter(itemFound?.quantity);
+      }else {
+        setCounter(1);
+      }
     }
     
-  }, [cartItems, item.id]);
+  }, [cartItems, item.id, currentUser?.id]);
 
   const handleClick = () => {
+    if (!currentUser?.id) return;
+    
     setIsHidden(true);
     addItem(item.id);
     setCounter(1);

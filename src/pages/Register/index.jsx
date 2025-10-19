@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom'
-import { register } from '../../store/features/authSlice';
+import { Link, useNavigate } from 'react-router-dom'
+import { register, reset } from '../../store/features/authSlice';
+import { createRestaurant, resetRestaurants } from '../../store/features/restaurantSlice.js';
+import { v4 as uuidv4 } from 'uuid';
 
 const Register = () => {
   const [form, setForm] = useState({
@@ -10,13 +12,16 @@ const Register = () => {
     password:'',
     phoneNumber:'',
     address:'',
-    role:'',
+    role:''
+  });
+  
+  const [restaurantForm, setRestaurantForm] = useState({
     // Restaurant info fields
-    restaurantName: '',
-    restaurantImage: null,
-    restaurantType: '',
-    restaurantCategory: '',
-    restaurantTags: [],
+    name: '',
+    img: null,
+    type: '',
+    category: '',
+    tags: [],
     restaurantAddress: '',
     restaurantStreet: '',
     restaurantCity: '',
@@ -24,7 +29,7 @@ const Register = () => {
     restaurantPhone: '',
     restaurantDescription: '',
     // Business info fields
-    openingHours: '',
+    time: '',
     deliveryFee: '',
     deliveryZone: '',
     minimumOrder: ''
@@ -33,14 +38,24 @@ const Register = () => {
   const [tagInput, setTagInput] = useState('');
   const dispatch = useDispatch();
   const { users } = useSelector(state => state.auth);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    //dispatch(reset())
+    //dispatch(reset());
+    //dispatch(resetRestaurants());
   }, []);
   const handleChange = (e) => {
     const {name, value} = e.target;
     setForm({
       ...form,
+      [name]: value
+    })
+  }
+
+  const handleRestaurantChange = (e) => {
+    const {name, value} = e.target;
+    setRestaurantForm({
+      ...restaurantForm,
       [name]: value
     })
   }
@@ -60,9 +75,9 @@ const Register = () => {
         return;
       }
 
-      setForm({
-        ...form,
-        restaurantImage: file
+      setRestaurantForm({
+        ...restaurantForm,
+        img: file
       });
 
       // Create preview
@@ -74,21 +89,25 @@ const Register = () => {
     }
   }
 
+  const handleBrowseClick = () => {
+    document.getElementById('img').click();
+  }
+
   const handleAddTag = () => {
     const trimmedTag = tagInput.trim();
-    if (trimmedTag && !form.restaurantTags.includes(trimmedTag)) {
-      setForm({
-        ...form,
-        restaurantTags: [...form.restaurantTags, trimmedTag]
+    if (trimmedTag && !restaurantForm.tags.includes(trimmedTag)) {
+      setRestaurantForm({
+        ...restaurantForm,
+        tags: [...restaurantForm.tags, trimmedTag]
       });
       setTagInput('');
     }
   }
 
   const handleRemoveTag = (tagToRemove) => {
-    setForm({
-      ...form,
-      restaurantTags: form.restaurantTags.filter(tag => tag !== tagToRemove)
+    setRestaurantForm({
+      ...restaurantForm,
+      tags: restaurantForm.tags.filter(tag => tag !== tagToRemove)
     });
   }
 
@@ -101,11 +120,58 @@ const Register = () => {
 
   const onSubmit = (e) => {
     e.preventDefault();
+    navigate('/login');
     try {
          const userFound = users.find(user => user.email === form.email);
          if(!userFound){
-           dispatch(register(form))
-           
+           if(form.role === 'restaurant_owner'){
+                // Créer d'abord l'utilisateur avec un ID unique
+                const newUserId = uuidv4();
+                dispatch(register({
+                  id: newUserId,
+                  fullName: form.fullName,
+                  email: form.email,
+                  password: form.password,
+                  phoneNumber: form.phoneNumber,
+                  address: form.address,
+                  role:'restaurant_owner'
+                }));
+                
+                
+                // Ensuite créer le restaurant avec l'ID de l'utilisateur
+                dispatch(createRestaurant({
+                    ownerId: newUserId,
+                    name: restaurantForm.name,
+                    img: restaurantForm.img.name,
+                    type: restaurantForm.type,
+                    category: restaurantForm.category,
+                    tags: restaurantForm.tags,
+                    time: restaurantForm.time,
+                    deliveryFee: restaurantForm.deliveryFee,
+                    deliveryZone: restaurantForm.deliveryZone,
+                    minimumOrder: restaurantForm.minimumOrder,
+                    isFavorite: false,
+                    restaurantStreet: restaurantForm.restaurantStreet,
+                    restaurantCity: restaurantForm.restaurantCity,
+                    restaurantZipCode: restaurantForm.restaurantZipCode,
+                    restaurantPhone: restaurantForm.restaurantPhone,
+                    restaurantDescription: restaurantForm.restaurantDescription
+                  }));
+            console.log('User form ===>',form);
+            console.log('Restaurant form ===>',restaurantForm);
+                  
+           }else {
+              const newUserId = uuidv4();
+              dispatch(register({
+                id: newUserId,
+                fullName: form.fullName,
+                email: form.email,
+                password: form.password,
+                phoneNumber: form.phoneNumber,
+                address: form.address,
+                role: form.role
+              }));
+           }
          } else {
            console.log('user already exist !');
          }
@@ -235,34 +301,51 @@ const Register = () => {
 
                       <div className="space-y-4">
                         <div>
-                          <label htmlFor="restaurantName" className="block text-sm font-medium text-gray-700 mb-2">
+                          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
                             Nom du Restaurant *
                           </label>
                           <input
-                            id="restaurantName"
-                            name="restaurantName"
+                            id="name"
+                            name="name"
                             type="text"
                             required
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                             placeholder="Ex: Le Petit Bistrot"
-                            onChange={handleChange}
+                            onChange={handleRestaurantChange}
                           />
                         </div>
 
                         <div>
-                          <label htmlFor="restaurantImage" className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
                             Image du Restaurant *
                           </label>
                           <div className="space-y-4">
-                            <input
-                              id="restaurantImage"
-                              name="restaurantImage"
-                              type="file"
-                              accept="image/*"
-                              required
-                              onChange={handleImageChange}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
-                            />
+                            <div className="flex items-center gap-4">
+                              <input
+                                id="img"
+                                name="img"
+                                type="file"
+                                accept="image/*"
+                                required
+                                onChange={handleImageChange}
+                                style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', width: '1px', height: '1px' }}
+                              />
+                              <button
+                                type="button"
+                                onClick={handleBrowseClick}
+                                className="cursor-pointer inline-flex items-center px-6 py-3 border-2 border-orange-500 rounded-lg text-orange-500 font-medium hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+                              >
+                                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                Parcourir
+                              </button>
+                              {restaurantForm.img && (
+                                <span className="text-sm text-gray-600">
+                                  {restaurantForm.img.name}
+                                </span>
+                              )}
+                            </div>
                             <p className="text-xs text-gray-500">PNG, JPG, JPEG (max 5MB)</p>
                             {imagePreview && (
                               <div className="w-full max-w-sm">
@@ -280,15 +363,15 @@ const Register = () => {
                         </div>
 
                         <div>
-                          <label htmlFor="restaurantType" className="block text-sm font-medium text-gray-700 mb-2">
+                          <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-2">
                             Type *
                           </label>
                           <select
-                            id="restaurantType"
-                            name="restaurantType"
+                            id="type"
+                            name="type"
                             required
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                            onChange={handleChange}
+                            onChange={handleRestaurantChange}
                           >
                             <option value="">Select type</option>
                             <option value="restaurant">Restaurant</option>
@@ -297,15 +380,15 @@ const Register = () => {
                         </div>
 
                         <div>
-                          <label htmlFor="restaurantCategory" className="block text-sm font-medium text-gray-700 mb-2">
+                          <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
                             Category *
                           </label>
                           <select
-                            id="restaurantCategory"
-                            name="restaurantCategory"
+                            id="category"
+                            name="category"
                             required
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                            onChange={handleChange}
+                            onChange={handleRestaurantChange}
                           >
                             <option value="">Select category</option>
                             <option value="Burger">Burger</option>
@@ -320,13 +403,13 @@ const Register = () => {
                         </div>
 
                         <div>
-                          <label htmlFor="restaurantTags" className="block text-sm font-medium text-gray-700 mb-2">
+                          <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-2">
                             Tags
                           </label>
                           <div className="space-y-3">
                             <div className="flex gap-2">
                               <input
-                                id="restaurantTags"
+                                id="tags"
                                 type="text"
                                 list="tag-suggestions"
                                 value={tagInput}
@@ -375,9 +458,9 @@ const Register = () => {
                                 Add
                               </button>
                             </div>
-                            {form.restaurantTags.length > 0 && (
+                            {restaurantForm.tags.length > 0 && (
                               <div className="flex flex-wrap gap-2">
-                                {form.restaurantTags.map((tag, index) => (
+                                {restaurantForm.tags.map((tag, index) => (
                                   <span
                                     key={index}
                                     className="inline-flex items-center gap-2 px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-medium"
@@ -411,7 +494,7 @@ const Register = () => {
                             required
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                             placeholder="Ex: 123 Rue de la Paix"
-                            onChange={handleChange}
+                            onChange={handleRestaurantChange}
                           />
                         </div>
 
@@ -427,7 +510,7 @@ const Register = () => {
                               required
                               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                               placeholder="Ex: Paris"
-                              onChange={handleChange}
+                              onChange={handleRestaurantChange}
                             />
                           </div>
                           <div>
@@ -441,7 +524,7 @@ const Register = () => {
                               required
                               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                               placeholder="Ex: 75001"
-                              onChange={handleChange}
+                              onChange={handleRestaurantChange}
                             />
                           </div>
                         </div>
@@ -457,7 +540,7 @@ const Register = () => {
                             required
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                             placeholder="Ex: +33 1 23 45 67 89"
-                            onChange={handleChange}
+                            onChange={handleRestaurantChange}
                           />
                         </div>
 
@@ -471,7 +554,7 @@ const Register = () => {
                             rows="3"
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
                             placeholder="Décrivez votre restaurant (optionnel)"
-                            onChange={handleChange}
+                            onChange={handleRestaurantChange}
                           />
                         </div>
                       </div>
@@ -485,17 +568,17 @@ const Register = () => {
 
                       <div className="space-y-4">
                         <div>
-                          <label htmlFor="openingHours" className="block text-sm font-medium text-gray-700 mb-2">
+                          <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-2">
                             Horaires d'Ouverture *
                           </label>
                           <input
-                            id="openingHours"
-                            name="openingHours"
+                            id="time"
+                            name="time"
                             type="text"
                             required
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                             placeholder="Ex: Lun-Dim 11h-23h"
-                            onChange={handleChange}
+                            onChange={handleRestaurantChange}
                           />
                         </div>
 
@@ -512,7 +595,7 @@ const Register = () => {
                             required
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                             placeholder="Ex: 2.50"
-                            onChange={handleChange}
+                            onChange={handleRestaurantChange}
                           />
                         </div>
 
@@ -527,7 +610,7 @@ const Register = () => {
                             required
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                             placeholder="Ex: 5 km ou quartiers spécifiques"
-                            onChange={handleChange}
+                            onChange={handleRestaurantChange}
                           />
                         </div>
 
@@ -543,7 +626,7 @@ const Register = () => {
                             min="0"
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                             placeholder="Ex: 15.00 (optionnel)"
-                            onChange={handleChange}
+                            onChange={handleRestaurantChange}
                           />
                         </div>
                       </div>
@@ -574,6 +657,7 @@ const Register = () => {
                 <button
                   type="submit"
                   className="w-full bg-orange-500 text-white py-3 px-4 rounded-lg font-medium hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors"
+
                 >
                   Create Account
                 </button>

@@ -278,7 +278,7 @@ const Home = () => {
                 time={restaurant.time}
                 tags={restaurant.tags}
                 badge={restaurant.badge}
-                userId= {currentUser.id}
+                userId= {currentUser?.id}
                 isActive ={ favoriteIds.has(restaurant.id) }
               />
             )}
@@ -315,7 +315,7 @@ const Home = () => {
                 tags={restaurant.tags}
                 badge={restaurant.badge}
                 isNew={restaurant.isNew}
-                userId= {currentUser.id}
+                userId= {currentUser?.id}
                 isActive ={ favoriteIds.has(restaurant.id) }
               />
             )}
@@ -351,7 +351,7 @@ const Home = () => {
                 time={restaurant.time}
                 tags={restaurant.tags}
                 reason={restaurant.reason}
-                userId= {currentUser.id}
+                userId= {currentUser?.id}
                 isActive ={ favoriteIds.has(restaurant.id) }
               />
             )}
@@ -382,7 +382,7 @@ const Home = () => {
                 rate={place.rate}
                 time={place.time}
                 tags={place.tags}
-                userId= {currentUser.id}
+                userId= {currentUser?.id}
                 isActive ={ favoriteIds.has(place.id) }
               />
             )}
@@ -414,7 +414,7 @@ const Home = () => {
                 rate={restaurant.rate}
                 time={restaurant.time}
                 tags={restaurant.tags}
-                userId= {currentUser.id}
+                userId= {currentUser?.id}
                 isActive ={ favoriteIds.has(restaurant.id) }
               />
             )}

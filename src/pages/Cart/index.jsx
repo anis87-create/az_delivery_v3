@@ -23,7 +23,7 @@ const Cart = () => {
   // Get cart state from Redux store
   const { cartItems, subTotalPrice } = useSelector(state => state.cart);
   const { currentUser } = useSelector(state => state.auth);
-  const cartItemsByUser =  cartItems.filter(item => item.userId === currentUser.id)
+  const cartItemsByUser =  cartItems.filter(item => item.userId === currentUser?.id)
   // Calculate total price including delivery and tax
   const total = subTotalPrice + DELIVERY_FREE + TAX;
   const navigate = useNavigate();

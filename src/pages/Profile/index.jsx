@@ -42,7 +42,7 @@ const Profile = () => {
                 </button>
               </div>
               <div className="text-center md:text-left text-white">
-                <h1 className="text-3xl font-bold mb-2">{currentUser.fullName}</h1>
+                <h1 className="text-3xl font-bold mb-2">{currentUser?.fullName || ''}</h1>
                 <p className="text-orange-100 mb-1">{currentUser.role}</p>
                 <p className="text-orange-100 text-sm">Member since January 2024</p>
               </div>
@@ -65,7 +65,7 @@ const Profile = () => {
                   <HiUser className="w-4 h-4 mr-2" />
                   Full Name
                 </label>
-                <p className="px-4 py-3 bg-gray-50 rounded-lg text-gray-900">{currentUser.fullName}</p>
+                <p className="px-4 py-3 bg-gray-50 rounded-lg text-gray-900">{currentUser?.fullName || 'User'}</p>
               </div>
 
               {/* Email */}

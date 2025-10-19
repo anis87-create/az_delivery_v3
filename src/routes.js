@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router";
 import AppLayout from './components/layout/AppLayout';
+import ProtectedRoutes from './components/protectedRoutes';
 import Home from './pages/Home';
 import Cart from './pages/Cart';
 import RestaurantDetail from './pages/RestaurantDetail';
@@ -23,7 +24,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'cart',
-        element: <Cart />,
+        element: <ProtectedRoutes><Cart /></ProtectedRoutes>,
       },
       {
         path: 'search',
@@ -35,23 +36,23 @@ export const router = createBrowserRouter([
       },
       {
         path: 'profile',
-        element: <Profile />,
+        element: <ProtectedRoutes><Profile /></ProtectedRoutes>,
       },
       {
         path: 'settings',
-        element: <Settings />,
+        element: <ProtectedRoutes><Settings /></ProtectedRoutes>,
       },
       {
         path:'checkout',
-        element: <Checkout />
+        element: <ProtectedRoutes><Checkout /></ProtectedRoutes>
       },
       {
         path: 'orders',
-        element: <Orders />
+        element: <ProtectedRoutes><Orders /></ProtectedRoutes>
       },
       {
         path:'favorites',
-        element: <Favorites />
+        element: <ProtectedRoutes><Favorites /></ProtectedRoutes>
       }
     ],
   },

@@ -17,7 +17,7 @@ const RestaurantDetail = () => {
   const items = getItemsByRestaurantId(parseInt(id))
   //const comments = getCommentsByRestaurantId(parseInt(id))
   const totalComments = getTotalCommentsCount(parseInt(id))
-  const { currentUser } = useSelector (state => state.auth);
+  const { currentUser, isAuth } = useSelector (state => state.auth);
   const { comments } = useSelector(state => state.comment);
   const { users } = useSelector(state => state.auth);
   const [buttonHidden, setButtonHidden] = useState(false);
@@ -172,11 +172,12 @@ const RestaurantDetail = () => {
           </div>
 
           {/* Formulaire d'ajout de commentaire */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+          {isAuth && currentUser && (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
             <div className="flex items-center gap-4 mb-4">
               {/* Avatar utilisateur connecté */}
     
-              <Avatar name={`${currentUser.fullName}`} size="w-[40px] h-[40px]" 
+              <Avatar name={`${currentUser?.fullName || 'User'}`} size="w-[40px] h-[40px]" 
                      fontSize='text-xs'
                     />
               <div>
@@ -254,7 +255,7 @@ const RestaurantDetail = () => {
                     reply({
                     restaurantId: restaurant.id,
                     userId: currentUser.id,
-                    userName: currentUser.fullName,
+                    userName: currentUser?.fullName || 'User',
                     userAvatar: currentUser.avatar,
                     comment: commentContent,
                     likes: 0,
@@ -267,6 +268,7 @@ const RestaurantDetail = () => {
               </div>
             </form>
           </div>
+          )}
           
           {commentsFiltredByRestaurant.length > 0 ? (
             <div className="space-y-6">

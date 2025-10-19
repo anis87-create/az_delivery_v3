@@ -122,7 +122,7 @@ const Search = () => {
             rate={restaurant.rate}
             time={restaurant.time}
             tags={restaurant.tags}
-            userId= {currentUser.id}
+            userId= {currentUser?.id}
             isActive ={ favoriteIds.has(restaurant.id) }
           />
         ))
