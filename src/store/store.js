@@ -4,7 +4,10 @@ import  cartSlice  from "./features/cartSlice";
 import  commentSlice  from "./features/commentSlice";
 import orderSlice from "./features/orderSlice";
 import  favoritesSlice  from "./features/favoritesSlice";
-import restaurantSlice from './features/restaurantSlice.js';
+import restaurantSlice from './features/restaurantSlice';
+import itemSlice from "./features/itemsSlice";
+import categorySlice from "./features/categoriesSlice";
+
 
 export const store = configureStore({
   reducer: {
@@ -13,7 +16,9 @@ export const store = configureStore({
       comment: commentSlice,
       order: orderSlice,
       favorites: favoritesSlice,
-      restaurant : restaurantSlice
+      restaurant : restaurantSlice,
+      items: itemSlice,
+      categories: categorySlice,
    }
 }) 
 

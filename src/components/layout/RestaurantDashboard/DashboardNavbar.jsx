@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { addCategory, resetCategory } from '../../../store/features/categoriesSlice';
 
 const DashboardNavbar = ({ restaurantName, restaurantEmail, restaurantLogo, currentSection = 'Dashboard', onMenuClick }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
   const [categoryName, setCategoryName] = useState('');
+  const { categories } = useSelector(state => state.categories);
   
   // Add Menu Item states
   const [showAddMenuItemModal, setShowAddMenuItemModal] = useState(false);
   const [menuItem, setMenuItem] = useState({
-    category: '',
+    categoryId: '',
     name: '',
     description: '',
     price: '',
@@ -18,8 +21,10 @@ const DashboardNavbar = ({ restaurantName, restaurantEmail, restaurantLogo, curr
   });
 
   // Mock categories data
-  const categories = ['Appetizers', 'Main Courses', 'Desserts', 'Beverages'];
-
+  const dispatch = useDispatch();
+  useEffect(() => {
+    //dispatch(resetCategory())
+  }, []);
   const handleLogout = () => {
     // Add logout logic here
     setShowDropdown(false);
@@ -27,6 +32,7 @@ const DashboardNavbar = ({ restaurantName, restaurantEmail, restaurantLogo, curr
 
   const handleAddCategory = () => {
     if (categoryName.trim()) {
+      dispatch(addCategory({id: categories.length, name: categoryName}));
       setCategoryName('');
       setShowAddCategoryModal(false);
     }
@@ -38,8 +44,10 @@ const DashboardNavbar = ({ restaurantName, restaurantEmail, restaurantLogo, curr
   };
 
   const handleAddMenuItem = () => {
+    console.log('yes');
+    
     setMenuItem({
-      category: '',
+      categoryId: '',
       name: '',
       description: '',
       price: '',
@@ -52,7 +60,7 @@ const DashboardNavbar = ({ restaurantName, restaurantEmail, restaurantLogo, curr
 
   const handleCancelMenuItem = () => {
     setMenuItem({
-      category: '',
+      categoryId: '',
       name: '',
       description: '',
       price: '',
@@ -68,7 +76,14 @@ const DashboardNavbar = ({ restaurantName, restaurantEmail, restaurantLogo, curr
       ...prev,
       [field]: value
     }));
+    console.log(menuItem.categoryId);
+    
   };
+
+  const getCategoryNameById = (id) => {
+
+    return categories.find(category => category.id === Number(id))?.name;
+  }
 
   const getSectionTitle = () => {
     switch(currentSection) {
@@ -284,13 +299,13 @@ const DashboardNavbar = ({ restaurantName, restaurantEmail, restaurantLogo, curr
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
                 <select
-                  value={menuItem.category}
-                  onChange={(e) => handleMenuItemChange('category', e.target.value)}
+                  value={ menuItem.categoryId }
+                  onChange={(e) => handleMenuItemChange('categoryId', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                 >
                   <option value="">Select a category</option>
                   {categories.map((cat) => (
-                    <option key={cat} value={cat}>{cat}</option>
+                    <option key={cat.id} value={cat.id}>{cat?.name}</option>
                   ))}
                 </select>
               </div>
