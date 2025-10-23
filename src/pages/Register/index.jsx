@@ -157,8 +157,6 @@ const Register = () => {
                     restaurantPhone: restaurantForm.restaurantPhone,
                     restaurantDescription: restaurantForm.restaurantDescription
                   }));
-            console.log('User form ===>',form);
-            console.log('Restaurant form ===>',restaurantForm);
                   
            }else {
               const newUserId = uuidv4();
@@ -173,11 +171,11 @@ const Register = () => {
               }));
            }
          } else {
-           console.log('user already exist !');
+           // User already exists
          }
   
     } catch (error) {
-        console.log(error);
+        // Handle error
     }
 
   }

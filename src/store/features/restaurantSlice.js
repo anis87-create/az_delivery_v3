@@ -5,7 +5,6 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const restaurantsFromStorage = localStorage.getItem('restaurants');
 const storedItems = restaurantsFromStorage && restaurantsFromStorage !== 'null' && restaurantsFromStorage !== '"null"' ? JSON.parse(restaurantsFromStorage) : [];
-console.log(storedItems);
 
 
 const  restaurantSlice = createSlice({
@@ -29,6 +28,9 @@ const  restaurantSlice = createSlice({
             state.restaurants = [];
             localStorage.setItem('restaurants', JSON.stringify([]));
         },
+        findRestaurantByUserId: (state, {payload}) => {
+            return state.restaurants.find(restaurant => restaurant.userId === payload.id);
+        }
     },
 })
 
@@ -36,6 +38,6 @@ export const { createRestaurant, resetRestaurants } = restaurantSlice.actions;
 
 // Selector pour obtenir les restaurants d'un propriétaire
 export const getRestaurantsByOwner = (state, ownerId) => 
-    state.restaurant.restaurants.filter(restaurant => restaurant.ownerId === ownerId);
+    state.restaurant.restaurants.find(restaurant => restaurant.ownerId === ownerId);
 
 export default restaurantSlice.reducer;

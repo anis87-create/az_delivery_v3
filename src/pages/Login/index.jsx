@@ -25,7 +25,12 @@ const Login = () => {
        const userFound = users.find(user => user.email === form.email);
        if(userFound){
            dispatch(login(form));
-           navigate('/');
+           if(userFound.currentRole === 'customer'){
+             navigate('/');
+           } else {
+            navigate('/restaurant-dashboard');
+           }
+           
        }
        
     } catch (error) {

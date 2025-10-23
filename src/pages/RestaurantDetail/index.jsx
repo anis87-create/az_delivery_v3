@@ -65,7 +65,7 @@ const RestaurantDetail = () => {
   }
 
   const findCommentUserName = (comment) => {
-    return users?.find(user => comment?.userId ===  user?.id).fullName;
+    return users?.find(user => comment?.userId ===  user?.id)?.fullName;
   }
 
 

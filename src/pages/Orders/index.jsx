@@ -139,8 +139,6 @@ const Orders = () => {
         ) : (
           <div className='space-y-4'>
             {filteredOrders.map((order) => {
-              console.log(order);
-              
               const statusConfig = getStatusConfig(order.status);
    
               return (

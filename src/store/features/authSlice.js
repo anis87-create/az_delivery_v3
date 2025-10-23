@@ -16,7 +16,6 @@ export const authSlice = createSlice({
             state.isAuth = true;
            } else {
             state.isAuth = false;
-            console.log('invalide credentials');
            }
         },
         register: (state, action) => {

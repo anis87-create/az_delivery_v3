@@ -1,9 +1,11 @@
 import { createBrowserRouter } from "react-router";
 import AppLayout from './components/layout/AppLayout';
+import DashboardLayout from './components/layout/RestaurantDashboard/DashboardLayout';
 import ProtectedRoutes from './components/protectedRoutes';
 import Home from './pages/Home';
 import Cart from './pages/Cart';
 import RestaurantDetail from './pages/RestaurantDetail';
+import RestaurantDashboard from './pages/RestaurantDashboard';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Search from './pages/Search';
@@ -55,6 +57,16 @@ export const router = createBrowserRouter([
         element: <ProtectedRoutes><Favorites /></ProtectedRoutes>
       }
     ],
+  },
+  {
+    path: '/restaurant-dashboard',
+    element: <ProtectedRoutes><DashboardLayout /></ProtectedRoutes>,
+    children: [
+      {
+        index: true,
+        element: <RestaurantDashboard />
+      }
+    ]
   },
   {
     path: 'login',
