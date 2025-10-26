@@ -1,51 +1,31 @@
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { removeItem } from '../../store/features/itemsSlice';
+import MenuItem from './MenuItem';
 
 const MenuManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All items');
   const [activeDropdown, setActiveDropdown] = useState(null);
+  const {items} = useSelector(state => state.items);
+  const { categories } = useSelector(state => state.categories);
+  const dispatch = useDispatch();
+
+  // Grouper les items par categoryId
+  const grouped = items.reduce((acc, item) => {
+    const key = item.categoryId;
+    if (!acc[key]) {
+      acc[key] = [];
+    }
+
+    const { category, ...rest } = item;
+    acc[key].push(rest);
+
+    return acc;
+  }, {});
 
   // Mock data
-  const [menuData, setMenuData] = useState({
-    'Appetizers': [
-      {
-        id: 1,
-        name: 'Caesar Salad',
-        description: 'Fresh lettuce, parmesan cheese, croutons, caesar dressing',
-        price: '12.99',
-        image: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=100&h=100&fit=crop',
-        available: true
-      },
-      {
-        id: 2,
-        name: 'Bruschetta',
-        description: 'Toasted bread, fresh tomatoes, basil, garlic, olive oil',
-        price: '9.99',
-        image: 'https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?w=100&h=100&fit=crop',
-        available: false
-      }
-    ],
-    'Main Courses': [
-      {
-        id: 3,
-        name: 'Grilled Salmon',
-        description: 'Atlantic salmon, seasonal vegetables, lemon butter sauce',
-        price: '24.99',
-        image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=100&h=100&fit=crop',
-        available: true
-      }
-    ],
-    'Desserts': [
-      {
-        id: 4,
-        name: 'Chocolate Cake',
-        description: 'Rich chocolate cake, vanilla ice cream, berry sauce',
-        price: '8.99',
-        image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=100&h=100&fit=crop',
-        available: true
-      }
-    ]
-  });
+  const [menuData, setMenuData] = useState(grouped);
 
   const toggleItemAvailability = (categoryName, itemId) => {
     setMenuData(prevData => ({
@@ -59,10 +39,12 @@ const MenuManagement = () => {
   const handleDropdownAction = () => {
     setActiveDropdown(null);
   };
+  const handleRemoveItem = (item) => {
+    dispatch(removeItem(item));
+  }
 
   const getFilteredItems = (items) => {
     let filtered = items;
-    
     if (filterStatus === 'Available') {
       filtered = filtered.filter(item => item.available);
     } else if (filterStatus === 'Unavailable') {
@@ -71,8 +53,7 @@ const MenuManagement = () => {
     
     if (searchTerm) {
       filtered = filtered.filter(item =>
-        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.description.toLowerCase().includes(searchTerm.toLowerCase())
+        item.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
     
@@ -104,7 +85,7 @@ const MenuManagement = () => {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               />
             </div>
-            
+
             {/* Filter Select */}
             <div className="relative">
               <select
@@ -112,9 +93,9 @@ const MenuManagement = () => {
                 onChange={(e) => setFilterStatus(e.target.value)}
                 className="appearance-none bg-white border border-gray-300 rounded-md px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               >
-                <option value="All items">All items</option>
-                <option value="Available">Available</option>
-                <option value="Unavailable">Unavailable</option>
+                <option key="all" value="All items">All items</option>
+                <option key="available" value="Available">Available</option>
+                <option key="unavailable" value="Unavailable">Unavailable</option>
               </select>
               <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
                 <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -127,13 +108,16 @@ const MenuManagement = () => {
 
         {/* Categories and Items */}
         <div className="space-y-6">
-          {Object.entries(menuData).map(([categoryName, items]) => {
-            const filteredItems = getFilteredItems(items);
-            
-            if (filteredItems.length === 0) return null;
-            
+          {Object.entries(grouped)
+            .filter(([, items]) => {
+              const filteredItems = getFilteredItems(items);
+              return filteredItems.length > 0;
+            })
+            .map(([categoryId, items]) => {
+              const filteredItems = getFilteredItems(items);
+              const categoryName = categories.find(category => category.id === Number(categoryId))?.name;
             return (
-              <div key={categoryName}>
+              <div key={`category-${categoryId}`}>
                 {/* Category Header */}
                 <div className="bg-gray-50 px-4 py-3 rounded-lg mb-4">
                   <div className="flex items-center justify-between">
@@ -145,87 +129,16 @@ const MenuManagement = () => {
                 {/* Category Items */}
                 <div className="space-y-3">
                   {filteredItems.map((item) => (
-                    <div key={item.id} className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
-                      {/* Item Image */}
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-16 h-16 object-cover rounded-lg mr-4"
-                      />
-                      
-                      {/* Item Info */}
-                      <div className="flex-1">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <h5 className="font-medium text-gray-900">{item.name}</h5>
-                            <p className="text-sm text-gray-600 mt-1">{item.description}</p>
-                            <div className="flex items-center mt-2">
-                              <span className="text-lg font-semibold text-gray-900">${item.price}</span>
-                              <span className={`ml-3 px-2 py-1 text-xs font-medium rounded-full ${
-                                item.available 
-                                  ? 'bg-white text-green-600 border border-green-600' 
-                                  : 'bg-gray-100 text-gray-800'
-                              }`}>
-                                {item.available ? 'Available' : 'Unavailable'}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {/* Item Actions */}
-                      <div className="flex items-center space-x-3">
-                        {/* Availability Toggle */}
-                        <button
-                          onClick={() => toggleItemAvailability(categoryName, item.id)}
-                          className={`px-3 py-1 text-xs font-medium rounded-md ${
-                            item.available
-                              ? 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                              : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                          }`}
-                        >
-                          {item.available ? 'Mark Unavailable' : 'Mark Available'}
-                        </button>
-                        
-                        {/* Three Dots Menu */}
-                        <div className="relative">
-                          <button
-                            onClick={() => setActiveDropdown(activeDropdown === item.id ? null : item.id)}
-                            className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"
-                          >
-                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                            </svg>
-                          </button>
-                          
-                          {/* Dropdown Menu */}
-                          {activeDropdown === item.id && (
-                            <div className="absolute right-0 mt-2 w-32 bg-white rounded-md shadow-lg border border-gray-200 z-10">
-                              <div className="py-1">
-                                <button
-                                  onClick={() => handleDropdownAction('edit', categoryName, item.id)}
-                                  className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
-                                >
-                                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                  </svg>
-                                  Edit
-                                </button>
-                                <button
-                                  onClick={() => handleDropdownAction('delete', categoryName, item.id)}
-                                  className="flex items-center px-4 py-2 text-sm text-red-700 hover:bg-red-50 w-full text-left"
-                                >
-                                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                  </svg>
-                                  Delete
-                                </button>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                    <MenuItem
+                      key={item.id}
+                      item={item}
+                      categoryId={categoryId}
+                      activeDropdown={activeDropdown}
+                      toggleItemAvailability={toggleItemAvailability}
+                      handleDropdownAction={handleDropdownAction}
+                      setActiveDropdown={setActiveDropdown}
+                      handleRemoveItem={handleRemoveItem}
+                    />
                   ))}
                 </div>
               </div>

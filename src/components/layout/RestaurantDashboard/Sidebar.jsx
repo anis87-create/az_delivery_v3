@@ -1,4 +1,5 @@
 
+
 const Sidebar = ({ restaurantName, restaurantLogo, currentSection, onSectionChange, isOpen, onClose }) => {
   
   const menuItems = [
@@ -41,6 +42,7 @@ const Sidebar = ({ restaurantName, restaurantLogo, currentSection, onSectionChan
     }
   ];
 
+  
   const handleMenuClick = (itemName) => {
     onSectionChange(itemName);
     if (onClose) onClose();
@@ -89,7 +91,7 @@ const Sidebar = ({ restaurantName, restaurantLogo, currentSection, onSectionChan
       {/* Menu Items */}
       <nav className="mt-6">
         <div className="px-3">
-          {menuItems.map((item) => {
+          {menuItems?.map((item) => {
             const isActive = currentSection === item.name;
             return (
               <button

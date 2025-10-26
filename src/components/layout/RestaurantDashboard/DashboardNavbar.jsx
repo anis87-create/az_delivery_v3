@@ -1,24 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addCategory, resetCategory } from '../../../store/features/categoriesSlice';
+import { getRestaurantsByOwner } from '../../../store/features/restaurantSlice';
+import { addItem } from '../../../store/features/itemsSlice';
+
 
 const DashboardNavbar = ({ restaurantName, restaurantEmail, restaurantLogo, currentSection = 'Dashboard', onMenuClick }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
   const [categoryName, setCategoryName] = useState('');
   const { categories } = useSelector(state => state.categories);
-  
+   const {currentUser} = useSelector(state => state.auth);
+  const restaurant = useSelector(state => getRestaurantsByOwner(state, currentUser.id));
+  const { items } = useSelector(state => state.items);
   // Add Menu Item states
   const [showAddMenuItemModal, setShowAddMenuItemModal] = useState(false);
   const [menuItem, setMenuItem] = useState({
     categoryId: '',
     name: '',
-    description: '',
+    ingredients: [],
     price: '',
     imageUrl: '',
     available: true,
     popular: false
   });
+  const [currentIngredient, setCurrentIngredient] = useState('');
 
   // Mock categories data
   const dispatch = useDispatch();
@@ -32,7 +38,7 @@ const DashboardNavbar = ({ restaurantName, restaurantEmail, restaurantLogo, curr
 
   const handleAddCategory = () => {
     if (categoryName.trim()) {
-      dispatch(addCategory({id: categories.length, name: categoryName}));
+      dispatch(addCategory({id: categories.length, name: categoryName, restaurantId: restaurant?.id}));
       setCategoryName('');
       setShowAddCategoryModal(false);
     }
@@ -44,30 +50,57 @@ const DashboardNavbar = ({ restaurantName, restaurantEmail, restaurantLogo, curr
   };
 
   const handleAddMenuItem = () => {
-    console.log('yes');
-    
+    dispatch(addItem({
+      id: items.length,
+      restaurantId: restaurant.id,
+      categoryId:menuItem.categoryId,
+      name: menuItem.name,
+      ingredients: menuItem.ingredients,
+      price: menuItem.price,
+      imageUrl: menuItem.imageUrl,
+      available: menuItem.available,
+      popular: menuItem.popular
+    }));
+    setShowAddMenuItemModal(false);
     setMenuItem({
       categoryId: '',
       name: '',
-      description: '',
+      ingredients: [],
       price: '',
       imageUrl: '',
       available: true,
       popular: false
     });
-    setShowAddMenuItemModal(false);
+  };
+
+  const handleAddIngredient = () => {
+    if (currentIngredient.trim() && !menuItem.ingredients.includes(currentIngredient.trim())) {
+      setMenuItem(prev => ({
+        ...prev,
+        ingredients: [...prev.ingredients, currentIngredient.trim()]
+      }));
+      setCurrentIngredient('');
+    }
+  };
+
+  const handleRemoveIngredient = (ingredientToRemove) => {
+    setMenuItem(prev => ({
+      ...prev,
+      ingredients: prev.ingredients.filter(ing => ing !== ingredientToRemove)
+    }));
   };
 
   const handleCancelMenuItem = () => {
     setMenuItem({
       categoryId: '',
       name: '',
-      description: '',
+      ingredients: [],
       price: '',
       imageUrl: '',
       available: true,
       popular: false
     });
+    setCurrentIngredient('');
     setShowAddMenuItemModal(false);
   };
 
@@ -79,11 +112,6 @@ const DashboardNavbar = ({ restaurantName, restaurantEmail, restaurantLogo, curr
     console.log(menuItem.categoryId);
     
   };
-
-  const getCategoryNameById = (id) => {
-
-    return categories.find(category => category.id === Number(id))?.name;
-  }
 
   const getSectionTitle = () => {
     switch(currentSection) {
@@ -304,7 +332,7 @@ const DashboardNavbar = ({ restaurantName, restaurantEmail, restaurantLogo, curr
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                 >
                   <option value="">Select a category</option>
-                  {categories.map((cat) => (
+                  {categories?.map((cat) => (
                     <option key={cat.id} value={cat.id}>{cat?.name}</option>
                   ))}
                 </select>
@@ -322,16 +350,56 @@ const DashboardNavbar = ({ restaurantName, restaurantEmail, restaurantLogo, curr
                 />
               </div>
 
-              {/* Description */}
+              {/* Ingredients */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                <textarea
-                  value={menuItem.description}
-                  onChange={(e) => handleMenuItemChange('description', e.target.value)}
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  placeholder="Describe your menu item"
-                />
+                <label className="block text-sm font-medium text-gray-700 mb-2">Ingredients</label>
+                <div className="flex gap-2 mb-3">
+                  <input
+                    type="text"
+                    value={currentIngredient}
+                    onChange={(e) => setCurrentIngredient(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddIngredient();
+                      }
+                    }}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                    placeholder="Add an ingredient"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddIngredient}
+                    className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                  </button>
+                </div>
+
+                {/* Selected Ingredients */}
+                {menuItem.ingredients.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {menuItem.ingredients.map((ingredient, index) => (
+                      <span
+                        key={index}
+                        className="inline-flex items-center gap-1 px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm font-medium"
+                      >
+                        {ingredient}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveIngredient(ingredient)}
+                          className="hover:bg-orange-200 rounded-full p-0.5 transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Price */}

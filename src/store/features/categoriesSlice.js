@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const itemsSlice = createSlice({
     name: 'categories',
     initialState: {
-        categories: JSON.parse(localStorage.getItem('categories')) || []
+        categories:  localStorage.getItem('categories') ? JSON.parse(localStorage.getItem('categories')) : []
     },
     reducers: {
         addCategory: (state, {payload}) => {
@@ -12,9 +12,9 @@ const itemsSlice = createSlice({
         },
         resetCategory : (state) => {
             state.categories = [];
-            localStorage.setItem('categories', state.categories);
-        }
+            localStorage.setItem('categories', JSON.stringify(state.categories));
     }
+}
 });
 export const { addCategory, resetCategory } = itemsSlice.actions;
 export default itemsSlice.reducer;
