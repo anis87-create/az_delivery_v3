@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getRestaurantsByOwner } from '../../store/features/restaurantSlice';
+import { getRestaurantsByOwner, updateRestaurant } from '../../store/features/restaurantSlice';
 
 
 
@@ -8,16 +8,16 @@ const SettingsManagement = () => {
   const [activeTab, setActiveTab] = useState('General');
   const {currentUser} = useSelector(state => state.auth);
 
-  const restaurant = useSelector(state => getRestaurantsByOwner(state, currentUser.id));
- 
+  let restaurant = useSelector(state => getRestaurantsByOwner(state, currentUser.id));
+  const dispatch = useDispatch();
   
   const [restaurantData, setRestaurantData] = useState({
-    name:   restaurant.name ||  'Mon Restaurant',
+    name: restaurant?.name || 'Mon Restaurant',
     email: 'restaurant@example.com',
-    phone: restaurant.restaurantPhone,
-    address: `${restaurant.restaurantStreet} ${restaurant.restaurantZipCode},${restaurant.restaurantCity}`,
-    description: restaurant.restaurantDescription,
-    openingHours: {
+    phone: restaurant?.restaurantPhone || '',
+    address: restaurant ? `${restaurant.restaurantStreet || ''} ${restaurant.restaurantZipCode || ''},${restaurant.restaurantCity || ''}` : '',
+    description: restaurant?.restaurantDescription || '',
+    openingHours: restaurant?.openingHours || {
       monday: { open: '11:00', close: '22:00', closed: false },
       tuesday: { open: '11:00', close: '22:00', closed: false },
       wednesday: { open: '11:00', close: '22:00', closed: false },
@@ -27,16 +27,16 @@ const SettingsManagement = () => {
       sunday: { open: '12:00', close: '21:00', closed: false }
     },
     deliverySettings: {
-      deliveryFee: restaurant.deliveryFee,
-      minimumOrder: restaurant.minimumOrder,
-      deliveryZone: restaurant.deliveryZone,
-      estimatedDeliveryTime: '30-45'
+      deliveryFee: restaurant?.deliverySettings.deliveryFee || 0,
+      minimumOrder: restaurant?.deliverySettings.minimumOrder || 0,
+      deliveryZone: restaurant?.deliverySettings.deliveryZone || 0,
+      estimatedDeliveryTime: restaurant?.deliverySettings.estimatedDeliveryTime || ''
     },
     paymentSettings: {
-      cashOnDelivery: true,
-      creditCard: true,
-      debitCard: true,
-      onlinePayment: true
+      cashOnDelivery: restaurant?.paymentSettings?.cashOnDelivery || false,
+      creditCard: restaurant?.paymentSettings?.creditCard || false ,
+      debitCard: restaurant?.paymentSettings?.creditCard || false,
+      onlinePayment: restaurant?.paymentSettings?.onlinePayment || false
     },
     taxSettings: {
       taxRate: '8.5',
@@ -96,7 +96,16 @@ const SettingsManagement = () => {
   };
 
   const handleSaveChanges = () => {
-    // Ici on ajouterait la logique de sauvegarde
+    // Ici on ajouterait la logique de sauvegarde 
+   const obj = {
+    ...restaurant,
+    openingHours: restaurantData.openingHours,
+    deliverySettings: restaurantData.deliverySettings,
+    paymentSettings: restaurantData.paymentSettings
+   }
+   console.log(obj);
+   
+   dispatch(updateRestaurant(obj));
   };
 
   const tabs = ['General', 'Hours', 'Delivery', 'Payment'];

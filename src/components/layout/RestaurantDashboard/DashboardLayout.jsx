@@ -17,7 +17,7 @@ const DashboardLayout = ({
   const [sidebarOpen, setSidebarOpen] = useState(false);
     const {currentUser} = useSelector(state => state.auth);
   const dispatch = useDispatch();
-  const restaurant = useSelector(state => getRestaurantsByOwner(state, currentUser.id));
+  const restaurant = useSelector(state => currentUser ? getRestaurantsByOwner(state, currentUser.id) : null);
   const renderCurrentSection = () => {
     switch(currentSection) {
       case 'Dashboard':
@@ -44,7 +44,7 @@ const DashboardLayout = ({
 
       {/* Sidebar */}
       <Sidebar 
-        restaurantName={restaurant.name || restaurantName}
+        restaurantName={restaurant?.name || restaurantName}
         restaurantLogo={restaurantLogo}
         currentSection={currentSection}
         onSectionChange={setCurrentSection}
@@ -56,8 +56,8 @@ const DashboardLayout = ({
       <div className="flex flex-col flex-1 lg:ml-64">
         {/* Navbar */}
         <DashboardNavbar 
-          restaurantName={restaurant.name || restaurantName}
-          restaurantEmail={currentUser.email|| restaurantEmail}
+          restaurantName={restaurant?.name || restaurantName}
+          restaurantEmail={currentUser?.email|| restaurantEmail}
           restaurantLogo={restaurantLogo}
           currentSection={currentSection}
           onMenuClick={() => setSidebarOpen(true)}

@@ -1,9 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom'
 import { register, reset } from '../../store/features/authSlice';
 import { createRestaurant, resetRestaurants } from '../../store/features/restaurantSlice.js';
 import { v4 as uuidv4 } from 'uuid';
+import { resetCart } from '../../store/features/cartSlice.js';
+import { resetFavorites } from '../../store/features/favoritesSlice.js';
+import { resetItems } from '../../store/features/itemsSlice.js';
+import { resetComments } from '../../store/features/commentSlice.js';
+import { clearOrders } from '../../store/features/orderSlice.js';
+import { resetCategory } from '../../store/features/categoriesSlice.js';
 
 const Register = () => {
   const [form, setForm] = useState({
@@ -19,6 +25,7 @@ const Register = () => {
     // Restaurant info fields
     name: '',
     img: null,
+    coverImg: null,
     type: '',
     category: '',
     tags: [],
@@ -29,20 +36,26 @@ const Register = () => {
     restaurantPhone: '',
     restaurantDescription: '',
     // Business info fields
-    time: '',
-    deliveryFee: '',
-    deliveryZone: '',
-    minimumOrder: ''
+    deliveryZone: ''
   });
   const [imagePreview, setImagePreview] = useState(null);
+  const [coverImagePreview, setCoverImagePreview] = useState(null);
   const [tagInput, setTagInput] = useState('');
+  const fileInputRef = useRef(null);
+  const coverFileInputRef = useRef(null);
   const dispatch = useDispatch();
   const { users } = useSelector(state => state.auth);
   const navigate = useNavigate();
 
   useEffect(() => {
-    //dispatch(reset());
-    //dispatch(resetRestaurants());
+    /*dispatch(reset());
+    dispatch(resetCart());
+    dispatch(resetFavorites());
+    dispatch(resetItems());
+    dispatch(resetComments());
+    dispatch(clearOrders());
+    dispatch(resetCategory());
+    dispatch(resetRestaurants());*/
   }, []);
   const handleChange = (e) => {
     const {name, value} = e.target;
@@ -90,8 +103,47 @@ const Register = () => {
   }
 
   const handleBrowseClick = () => {
-    document.getElementById('img').click();
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
   }
+
+  const handleCoverImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Check if file is an image
+      if (!file.type.startsWith('image/')) {
+        alert('Veuillez sélectionner une image valide');
+        return;
+      }
+
+      // Check file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('La taille de l\'image ne doit pas dépasser 5MB');
+        return;
+      }
+
+      setRestaurantForm({
+        ...restaurantForm,
+        coverImg: file
+      });
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCoverImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  const handleCoverBrowseClick = () => {
+    if (coverFileInputRef.current) {
+      coverFileInputRef.current.click();
+    }
+  }
+
+
 
   const handleAddTag = () => {
     const trimmedTag = tagInput.trim();
@@ -142,14 +194,12 @@ const Register = () => {
                 dispatch(createRestaurant({
                     ownerId: newUserId,
                     name: restaurantForm.name,
-                    img: restaurantForm.img.name,
+                    img: restaurantForm.img ? restaurantForm.img.name : null,
+                    coverImg: restaurantForm.coverImg ? restaurantForm.coverImg.name : null,
                     type: restaurantForm.type,
                     category: restaurantForm.category,
                     tags: restaurantForm.tags,
-                    time: restaurantForm.time,
-                    deliveryFee: restaurantForm.deliveryFee,
                     deliveryZone: restaurantForm.deliveryZone,
-                    minimumOrder: restaurantForm.minimumOrder,
                     isFavorite: false,
                     restaurantStreet: restaurantForm.restaurantStreet,
                     restaurantCity: restaurantForm.restaurantCity,
@@ -257,20 +307,22 @@ const Register = () => {
                   />
                 </div>
 
-                <div>
-                  <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
-                    Address
-                  </label>
-                  <input
-                    id="address"
-                    name="address"
-                    type="text"
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    placeholder="Enter your address"
-                    onChange={handleChange}
-                  />
-                </div>
+                {form.role !== 'restaurant_owner' && (
+                  <div>
+                    <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
+                      Address
+                    </label>
+                    <input
+                      id="address"
+                      name="address"
+                      type="text"
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      placeholder="Enter your address"
+                      onChange={handleChange}
+                    />
+                  </div>
+                )}
 
                 <div>
                   <label htmlFor="userType" className="block text-sm font-medium text-gray-700 mb-2">
@@ -313,52 +365,6 @@ const Register = () => {
                           />
                         </div>
 
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Image du Restaurant *
-                          </label>
-                          <div className="space-y-4">
-                            <div className="flex items-center gap-4">
-                              <input
-                                id="img"
-                                name="img"
-                                type="file"
-                                accept="image/*"
-                                required
-                                onChange={handleImageChange}
-                                style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', width: '1px', height: '1px' }}
-                              />
-                              <button
-                                type="button"
-                                onClick={handleBrowseClick}
-                                className="cursor-pointer inline-flex items-center px-6 py-3 border-2 border-orange-500 rounded-lg text-orange-500 font-medium hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
-                              >
-                                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                                Parcourir
-                              </button>
-                              {restaurantForm.img && (
-                                <span className="text-sm text-gray-600">
-                                  {restaurantForm.img.name}
-                                </span>
-                              )}
-                            </div>
-                            <p className="text-xs text-gray-500">PNG, JPG, JPEG (max 5MB)</p>
-                            {imagePreview && (
-                              <div className="w-full max-w-sm">
-                                <p className="text-sm font-medium text-gray-700 mb-2">Aperçu:</p>
-                                <div className="w-full h-48 border-2 border-gray-300 rounded-lg overflow-hidden bg-gray-50">
-                                  <img
-                                    src={imagePreview}
-                                    alt="Restaurant preview"
-                                    className="w-full h-full object-contain"
-                                  />
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </div>
 
                         <div>
                           <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-2">
@@ -565,37 +571,6 @@ const Register = () => {
                       </h3>
 
                       <div className="space-y-4">
-                        <div>
-                          <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-2">
-                            Horaires d'Ouverture *
-                          </label>
-                          <input
-                            id="time"
-                            name="time"
-                            type="text"
-                            required
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                            placeholder="Ex: Lun-Dim 11h-23h"
-                            onChange={handleRestaurantChange}
-                          />
-                        </div>
-
-                        <div>
-                          <label htmlFor="deliveryFee" className="block text-sm font-medium text-gray-700 mb-2">
-                            Frais de Livraison (€) *
-                          </label>
-                          <input
-                            id="deliveryFee"
-                            name="deliveryFee"
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            required
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                            placeholder="Ex: 2.50"
-                            onChange={handleRestaurantChange}
-                          />
-                        </div>
 
                         <div>
                           <label htmlFor="deliveryZone" className="block text-sm font-medium text-gray-700 mb-2">
@@ -608,22 +583,6 @@ const Register = () => {
                             required
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                             placeholder="Ex: 5 km ou quartiers spécifiques"
-                            onChange={handleRestaurantChange}
-                          />
-                        </div>
-
-                        <div>
-                          <label htmlFor="minimumOrder" className="block text-sm font-medium text-gray-700 mb-2">
-                            Commande Minimum (€)
-                          </label>
-                          <input
-                            id="minimumOrder"
-                            name="minimumOrder"
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                            placeholder="Ex: 15.00 (optionnel)"
                             onChange={handleRestaurantChange}
                           />
                         </div>

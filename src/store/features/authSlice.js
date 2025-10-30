@@ -31,12 +31,11 @@ export const authSlice = createSlice({
             state.isAuth = false;
             localStorage.removeItem('currentUser');
         },
-        reset: () => {
-            return {
-                users: [],
-                currentUser: {},
-                isAuth: false
-            }
+        reset: (state) => {
+            state.users = [];
+            state.currentUser = null;
+            state.isAuth = false;
+            localStorage.setItem('users', JSON.stringify(state.users));
         }
     }
 });

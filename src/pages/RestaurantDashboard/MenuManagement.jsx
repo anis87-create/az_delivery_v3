@@ -64,7 +64,6 @@ const MenuManagement = () => {
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">Menu Management</h2>
         <p className="text-gray-600">Manage your restaurant menu items and categories</p>
       </div>
 

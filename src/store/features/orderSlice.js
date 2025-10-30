@@ -41,6 +41,7 @@ const orderSlice = createSlice({
      */
     clearOrders: (state) => {
       state.orders = [];
+      localStorage.setItem('orders', state.orders);
     },
   },
 });

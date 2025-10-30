@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addCategory, resetCategory } from '../../../store/features/categoriesSlice';
 import { getRestaurantsByOwner } from '../../../store/features/restaurantSlice';
 import { addItem } from '../../../store/features/itemsSlice';
+import { logout } from '../../../store/features/authSlice';
+import { useNavigate } from 'react-router';
 
 
 const DashboardNavbar = ({ restaurantName, restaurantEmail, restaurantLogo, currentSection = 'Dashboard', onMenuClick }) => {
@@ -25,7 +27,7 @@ const DashboardNavbar = ({ restaurantName, restaurantEmail, restaurantLogo, curr
     popular: false
   });
   const [currentIngredient, setCurrentIngredient] = useState('');
-
+  const navigate = useNavigate();
   // Mock categories data
   const dispatch = useDispatch();
   useEffect(() => {
@@ -33,6 +35,8 @@ const DashboardNavbar = ({ restaurantName, restaurantEmail, restaurantLogo, curr
   }, []);
   const handleLogout = () => {
     // Add logout logic here
+    dispatch(logout());
+    navigate('/');
     setShowDropdown(false);
   };
 

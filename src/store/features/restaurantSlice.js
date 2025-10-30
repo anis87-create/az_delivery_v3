@@ -4,7 +4,16 @@ import { createSlice } from "@reduxjs/toolkit";
 
 
 const restaurantsFromStorage = localStorage.getItem('restaurants');
-const storedItems = restaurantsFromStorage && restaurantsFromStorage !== 'null' && restaurantsFromStorage !== '"null"' ? JSON.parse(restaurantsFromStorage) : [];
+const storedItems = (() => {
+    try {
+        return restaurantsFromStorage && restaurantsFromStorage !== 'null' && restaurantsFromStorage !== '"null"' ? JSON.parse(restaurantsFromStorage) : [];
+    } catch (error) {
+        console.warn('Failed to parse restaurants from localStorage:', error);
+        // Clear corrupted data
+        //localStorage.removeItem('restaurants');
+        return [];
+    }
+})();
 
 
 const  restaurantSlice = createSlice({
@@ -19,6 +28,15 @@ const  restaurantSlice = createSlice({
                 ...payload,
                 id: Date.now(), // ID unique pour le restaurant
                 ownerId: payload.ownerId || null, // ID du propriétaire
+                openingHours: payload.openingHours || null, // Horaires d'ouverture
+                paymentSettings: {
+                    acceptCash: true,
+                    acceptCard: true,
+                    acceptMobilePayment: false,
+                    minimumOrderAmount: 0,
+                    deliveryFee: 0,
+                    taxRate: 0
+                },
                 createdAt: new Date().toISOString()
             };
             state.restaurants.push(restaurantWithOwner);
@@ -30,14 +48,22 @@ const  restaurantSlice = createSlice({
         },
         findRestaurantByUserId: (state, {payload}) => {
             return state.restaurants.find(restaurant => restaurant.userId === payload.id);
+        },
+        updateRestaurant: (state, {payload}) => {
+           const index = state.restaurants.findIndex(restaurant => restaurant.name === payload.name); 
+           state.restaurants[index] = {
+              ...payload
+           }
+
+           localStorage.setItem('restaurants', JSON.stringify(state.restaurants));
         }
     },
 })
 
-export const { createRestaurant, resetRestaurants } = restaurantSlice.actions;
+export const { createRestaurant, resetRestaurants, updateRestaurant } = restaurantSlice.actions;
 
 // Selector pour obtenir les restaurants d'un propriétaire
 export const getRestaurantsByOwner = (state, ownerId) => 
-    state.restaurant.restaurants.find(restaurant => restaurant.ownerId === ownerId);
+    state.restaurant.restaurants.find(restaurant => restaurant.ownerId === ownerId) || null;
 
 export default restaurantSlice.reducer;
