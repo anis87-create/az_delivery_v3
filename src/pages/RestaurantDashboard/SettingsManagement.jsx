@@ -14,6 +14,7 @@ const SettingsManagement = () => {
   const [restaurantData, setRestaurantData] = useState({
     name: restaurant?.name || 'Mon Restaurant',
     email: 'restaurant@example.com',
+    coverImg: restaurant?.coverImg  || null,
     phone: restaurant?.restaurantPhone || '',
     address: restaurant ? `${restaurant.restaurantStreet || ''} ${restaurant.restaurantZipCode || ''},${restaurant.restaurantCity || ''}` : '',
     description: restaurant?.restaurantDescription || '',
@@ -44,11 +45,16 @@ const SettingsManagement = () => {
     }
   });
 
+  const [selectedFiles, setSelectedFiles] = useState({
+    logo: restaurant?.logo || null,
+    coverImg: restaurant?.coverImg || null
+  });
+
   const handleInputChange = (field, value) => {
     setRestaurantData(prev => ({
       ...prev,
       [field]: value
-    }));
+    }));    
   };
 
   const handleOpeningHoursChange = (day, field, value) => {
@@ -101,10 +107,10 @@ const SettingsManagement = () => {
     ...restaurant,
     openingHours: restaurantData.openingHours,
     deliverySettings: restaurantData.deliverySettings,
-    paymentSettings: restaurantData.paymentSettings
+    paymentSettings: restaurantData.paymentSettings,
+    coverImg: restaurantData.coverImg,
+    logo: restaurantData.logo
    }
-   console.log(obj);
-   
    dispatch(updateRestaurant(obj));
   };
 
@@ -213,32 +219,44 @@ const SettingsManagement = () => {
               <h4 className="text-md font-medium text-gray-900 mb-4">Restaurant Images</h4>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Logo Upload */}
+                {/* Logo URL */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Logo</label>
-                  <div className="relative">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleInputChange('logo', e.target.files[0])}
-                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
-                    />
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">Recommended: Square format, max 2MB</p>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Logo URL</label>
+                  <input
+                    type="text"
+                    value={selectedFiles.logo || ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      handleInputChange('logo', value);
+                      setSelectedFiles(prev => ({
+                        ...prev,
+                        logo: value
+                      }));
+                    }}
+                    placeholder="Entrez l'URL de votre logo"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Entrez l'URL complète de votre logo</p>
                 </div>
 
-                {/* Cover Image Upload */}
+                {/* Cover Image URL */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Cover Image</label>
-                  <div className="relative">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleInputChange('coverImage', e.target.files[0])}
-                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
-                    />
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">Recommended: 16:9 ratio, max 5MB</p>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Cover Image URL</label>
+                  <input
+                    type="text"
+                    value={selectedFiles.coverImg || ''}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      handleInputChange('coverImg', value);
+                      setSelectedFiles(prev => ({
+                        ...prev,
+                        coverImg: value
+                      }));
+                    }}
+                    placeholder="Entrez l'URL de votre image de couverture"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Entrez l'URL complète de votre image de couverture</p>
                 </div>
               </div>
             </div>

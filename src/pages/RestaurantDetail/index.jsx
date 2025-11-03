@@ -12,9 +12,11 @@ import QuantityContainer from '../../components/layout/QuantityContainer'
 import { addComment, removeComment, resetComments, toggleLike } from '../../store/features/commentSlice'
 
 const RestaurantDetail = () => {
-  const { id } = useParams()
-  const restaurant = getRestaurantById(parseInt(id))
-  const items = getItemsByRestaurantId(parseInt(id))
+  const { id } = useParams();
+  const {restaurants} = useSelector(state => state.restaurant);
+  const restaurant = restaurants.find(restaurant => restaurant.id === Number(id));
+
+  const { items }  = useSelector(state => state.items);
   //const comments = getCommentsByRestaurantId(parseInt(id))
   const totalComments = getTotalCommentsCount(parseInt(id))
   const { currentUser, isAuth } = useSelector (state => state.auth);
@@ -25,7 +27,7 @@ const RestaurantDetail = () => {
   const [commentContent, setCommentContent] = useState('');
   const [rateCount, setRateCount] = useState(0);
   const [commentsFiltredByRestaurant, setCommentsFiltredByRestaurant] = useState([]);
-  
+  const {categories} = useSelector(state => state.categories);
   useEffect(() => {
     //dispatch(resetComments());
     setCommentsFiltredByRestaurant(comments.filter(comment => comment.restaurantId === restaurant.id));
@@ -34,6 +36,7 @@ const RestaurantDetail = () => {
   const addItem = (id) => {
     setButtonHidden(true);
   }
+
   if (!restaurant) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -47,13 +50,14 @@ const RestaurantDetail = () => {
     )
   }
 
-  const groupedItems = items.reduce((acc, item) => {
-    if (!acc[item.category]) {
-      acc[item.category] = []
+  const groupedItems = items.filter(item => Number(id) === item.restaurantId).reduce((acc, item) => {
+    if (!acc[item.categoryId]) {
+      acc[item.categoryId] = []
     }
-    acc[item.category].push(item)
+    acc[item.categoryId].push(item)
     return acc
   }, {});
+  const findCategoryById = (categoryId) => categories.find(category => category.id === Number(categoryId)).name;
 
   const reply = (comment) => {
      dispatch(addComment(comment));
@@ -76,7 +80,7 @@ const RestaurantDetail = () => {
       {/* Header avec image du restaurant */}
       <div className="relative h-64 md:h-80 lg:h-96 overflow-hidden">
         <img 
-          src={restaurant.img} 
+          src={restaurant.coverImg} 
           alt={restaurant.name}
           className="w-full h-full object-cover"
         />
@@ -123,7 +127,7 @@ const RestaurantDetail = () => {
         {Object.entries(groupedItems).map(([category, categoryItems]) => (
           <div key={category} className="mb-8">
             <h3 className="text-xl font-semibold text-gray-800 mb-4 capitalize">
-              {category}
+            {findCategoryById(category)}
             </h3>
             <div className="grid gap-4">
               {categoryItems.map((item) => (
@@ -138,13 +142,13 @@ const RestaurantDetail = () => {
                         {item.ingredients.join(', ')}
                       </p>
                       <p className="text-orange-500 font-bold text-lg">
-                        {item.price.toFixed(2)} TND
+                        {Number(item.price).toFixed(2)} TND
                       </p>
                     </div>
-                    {item.image && (
+                    {item.imageUrl && (
                       <div className="ml-4">
                         <img 
-                          src={item.image} 
+                          src={item.imageUrl} 
                           alt={item.name}
                           className="w-20 h-20 object-cover rounded-lg"
                         />

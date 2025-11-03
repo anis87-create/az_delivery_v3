@@ -46,9 +46,6 @@ const  restaurantSlice = createSlice({
             state.restaurants = [];
             localStorage.setItem('restaurants', JSON.stringify([]));
         },
-        findRestaurantByUserId: (state, {payload}) => {
-            return state.restaurants.find(restaurant => restaurant.userId === payload.id);
-        },
         updateRestaurant: (state, {payload}) => {
            const index = state.restaurants.findIndex(restaurant => restaurant.name === payload.name); 
            state.restaurants[index] = {

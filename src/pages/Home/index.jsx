@@ -98,7 +98,7 @@ const Home = () => {
   const dispatch = useDispatch();
   const {favorites} = useSelector(state => state.favorites);
   const { currentUser } = useSelector(state => state.auth);
-
+  const {restaurants } = useSelector(state => state.restaurant);
   // Optimize favorites lookup with Set for O(1) performance
   const favoriteIds = useMemo(() => {
     return new Set(favorites.map(fav => fav.id));
@@ -194,7 +194,7 @@ const Home = () => {
         </div>
      </div>
 
-     {/**🔥 Trending section */}
+     {/*🔥 Trending section 
      <div className='container mx-auto w-[90%]'> 
        <div className='flex flex-col my-8 mx-0 md:my-12 md:mx-0 lg:my-[4rem] lg:mx-0'>
            <div className="flex justify-between items-center mb-4 sm:mb-6">
@@ -220,9 +220,9 @@ const Home = () => {
             )}
            </div>
        </div>
-     </div>
+     </div> */}
 
-     {/**💰 Special Offers section */}
+     {/*💰 Special Offers section 
      <div className='container mx-auto w-[90%]'> 
        <div className='flex flex-col my-8 mx-0 md:my-12 md:mx-0 lg:my-[4rem] lg:mx-0'>
            <div className="flex justify-between items-center mb-4 sm:mb-6">
@@ -248,9 +248,9 @@ const Home = () => {
             )}
            </div>
        </div>
-     </div>
+     </div> */}
 
-     {/**⭐ Top Rated section */}
+     {/*⭐ Top Rated section 
      <div className='container mx-auto w-[90%]'> 
        <div className='flex flex-col my-8 mx-0 md:my-12 md:mx-0 lg:my-[4rem] lg:mx-0'>
            <div className="flex justify-between items-center mb-4 sm:mb-6">
@@ -284,9 +284,9 @@ const Home = () => {
             )}
            </div>
        </div>
-     </div>
+     </div> */}
 
-     {/**🚀 New Arrivals section */}
+     {/*🚀 New Arrivals section 
      <div className='container mx-auto w-[90%]'> 
        <div className='flex flex-col my-8 mx-0 md:my-12 md:mx-0 lg:my-[4rem] lg:mx-0'>
            <div className="flex justify-between items-center mb-4 sm:mb-6">
@@ -321,9 +321,9 @@ const Home = () => {
             )}
            </div>
        </div>
-     </div>
+     </div> */}
 
-     {/**🎯 Recommended For You section */}
+     {/*🎯 Recommended For You section 
      <div className='container mx-auto w-[90%]'> 
        <div className='flex flex-col my-8 mx-0 md:my-12 md:mx-0 lg:my-[4rem] lg:mx-0'>
            <div className="flex justify-between items-center mb-4 sm:mb-6">
@@ -357,7 +357,7 @@ const Home = () => {
             )}
            </div>
        </div>
-     </div>
+     </div> */}
 
      {/**cafes and bars section */}
      <>
@@ -409,7 +409,7 @@ const Home = () => {
               <Restaurant
                 key={restaurant.id}
                 id={restaurant.id}
-                img={restaurant.img}
+                img={restaurant.coverImg}
                 name={restaurant.name}
                 rate={restaurant.rate}
                 time={restaurant.time}

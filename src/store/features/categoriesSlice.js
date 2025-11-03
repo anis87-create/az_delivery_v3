@@ -10,11 +10,14 @@ const itemsSlice = createSlice({
             state.categories.push(payload);
             localStorage.setItem('categories', JSON.stringify(state.categories));
         },
+        findCategoryById: (state, payload) => {
+          return state.categories.find(category => category.id ===  payload); 
+        },
         resetCategory : (state) => {
             state.categories = [];
             localStorage.setItem('categories', JSON.stringify(state.categories));
     }
 }
 });
-export const { addCategory, resetCategory } = itemsSlice.actions;
+export const { addCategory, resetCategory, findCategoryById } = itemsSlice.actions;
 export default itemsSlice.reducer;
