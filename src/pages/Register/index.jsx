@@ -4,13 +4,6 @@ import { Link, useNavigate } from 'react-router-dom'
 import { register, reset } from '../../store/features/authSlice';
 import { createRestaurant, resetRestaurants } from '../../store/features/restaurantSlice.js';
 import { v4 as uuidv4 } from 'uuid';
-import { resetCart } from '../../store/features/cartSlice.js';
-import { resetFavorites } from '../../store/features/favoritesSlice.js';
-import { resetItems } from '../../store/features/itemsSlice.js';
-import { resetComments } from '../../store/features/commentSlice.js';
-import { clearOrders } from '../../store/features/orderSlice.js';
-import { resetCategory } from '../../store/features/categoriesSlice.js';
-
 const Register = () => {
   const [form, setForm] = useState({
     fullName:'',

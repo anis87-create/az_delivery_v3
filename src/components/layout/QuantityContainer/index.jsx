@@ -9,11 +9,10 @@ const QuantityContainer = ({item, addItem}) => {
   const {cartItems} = useSelector(state => state.cart);
   const {currentUser} = useSelector(state => state.auth) 
   useEffect(() => {
-    //dispatch(resetCart());
-  }, [dispatch]);
-  useEffect(() => {
+    console.log(item.id);
+    
     if (currentUser?.id) {
-      const itemFound = cartItems.find(i => i.id === item?.id && item.userId === currentUser.id);    
+      const itemFound = cartItems.find(i => i.id === item?.id);  
       if(itemFound){
         setIsHidden(true);
         setCounter(itemFound?.quantity);
@@ -22,15 +21,16 @@ const QuantityContainer = ({item, addItem}) => {
       }
     }
     
-  }, [cartItems, item.id, currentUser?.id]);
+    
+  }, [cartItems, item.id, currentUser?.id, item?.userId]);
 
   const handleClick = () => {
     if (!currentUser?.id) return;
-    
+
     setIsHidden(true);
     addItem(item.id);
     setCounter(1);
-    dispatch(addToCart({id: item.id,userId: currentUser.id,  name: item.name, quantity: counter, restaurantId: item.restaurantId, image: item.image, category: item.category, price: item.price}));
+    dispatch(addToCart({id: item.id,userId: currentUser.id,  name: item.name, quantity: counter, restaurantId: item.restaurantId, image: item.imageUrl, category: item.category, price: item.price}));
 
   };
   const incrementCounter = () => {
@@ -81,7 +81,7 @@ const QuantityContainer = ({item, addItem}) => {
         onClick={handleClick}
         className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-colors duration-200 active:scale-95 transform"
       >
-        Ajouter
+        Add
       </button>
     </div>
   );

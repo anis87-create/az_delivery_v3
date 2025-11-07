@@ -28,22 +28,28 @@ export const cartSlice = createSlice({
        }
       )(),
       // Load subtotal from localStorage
-      subTotalPrice: localStorage.getItem('subTotalPrice')
+      subTotalPrice: localStorage.getItem('subTotalPrice'),
+      // Load total with fees from localStorage
+      totalWithFees: (() => {
+        try {
+          return JSON.parse(localStorage.getItem('totalWithFees')) ?? {
+            subtotal: 0,
+            total: 0
+          };
+        } catch {
+          return {
+            subtotal: 0,
+            total: 0
+          };
+        }
+      })()
     },
     reducers: {
-       /**
-        * Add a new item to the cart
-        * @param {Object} payload - Cart item to add
-        */
        addToCart : (state, { payload }) => {
             state.cartItems.push(payload);
             // Persist to localStorage
             localStorage.setItem('cartItems', JSON.stringify(state.cartItems));
        },
-       /**
-        * Update quantity of an existing cart item
-        * @param {Object} payload - Item with updated quantity
-        */
        updateQuantity: (state, {payload}) => {
            const itemFound = state.cartItems.find(item => item.id === payload.id);
            if (itemFound) {
@@ -52,39 +58,73 @@ export const cartSlice = createSlice({
                localStorage.setItem('cartItems', JSON.stringify(state.cartItems));
            }
        },
-       /**
-        * Remove an item from the cart
-        * @param {Object} payload - Item to remove
-        */
        deleteItem : (state, { payload }) => {
           state.cartItems = state.cartItems.filter(item => item.id !== payload.id);
           // Persist to localStorage
           localStorage.setItem('cartItems', JSON.stringify(state.cartItems));
        },
-       /**
-        * Clear all items from the cart and reset state
-        */
        resetCart: (state) => {
             // Clear localStorage
             localStorage.setItem('cartItems', JSON.stringify([]));
             localStorage.setItem('subTotalPrice', 0);
+            localStorage.setItem('totalWithFees', JSON.stringify({
+              subtotal: 0,
+              total: 0
+            }));
             // Reset state
             state.cartItems = [];
             state.subTotalPrice = 0;
+            state.totalWithFees = {
+              subtotal: 0,
+              total: 0
+            };
         },
-        /**
-         * Calculate and update the subtotal price
-         * Should be called after any cart modification
-         */
         getSubTotalPrice: (state) => {
-          const sum = state.cartItems?.reduce((total, item) => total + (item.price * item.quantity), 0);
-          state.subTotalPrice = sum;
+          const sum = state.cartItems?.reduce((total, item) => total + ((item.price * item.quantity)), 0);          
+          state.subTotalPrice = sum;      
           // Persist subtotal to localStorage
           localStorage.setItem('subTotalPrice', state.subTotalPrice);
+        },
+        getTotalPriceWithFees: (state, {payload}) => {
+          const { restaurants } = payload;
+          
+          // Calculate subtotal (price without fees)
+          const subtotal = state.cartItems?.reduce((total, item) => total + ((item.price * item.quantity)), 0);
+          
+          // Group items by restaurant
+          const itemsByRestaurant = state.cartItems.reduce((acc, item) => {
+            if (!acc[item.restaurantId]) {
+              acc[item.restaurantId] = [];
+            }
+            acc[item.restaurantId].push(item);
+            return acc;
+          }, {});
+          
+          let totalWithAllFees = 0;
+          
+          // Calculate total for each restaurant including fees
+          Object.keys(itemsByRestaurant).forEach(restaurantId => {            
+            const restaurant = restaurants.find(r => r.id === Number(restaurantId));
+            const restaurantItems = itemsByRestaurant[restaurantId];
+            const restaurantSubtotal = restaurantItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+            
+            const deliveryFee = Number(restaurant?.deliverySettings?.baseFee) || 0;
+            
+            // Add restaurant total with fees
+            totalWithAllFees += restaurantSubtotal + deliveryFee;
+          });
+          
+          state.totalWithFees = {
+            subtotal,
+            total: totalWithAllFees
+          };
+          
+          // Persist to localStorage
+          localStorage.setItem('totalWithFees', JSON.stringify(state.totalWithFees));
         }
     }
 });
 
-export const { addToCart, updateQuantity, resetCart, deleteItem, getSubTotalPrice } = cartSlice.actions;
+export const { addToCart, updateQuantity, resetCart, deleteItem, getSubTotalPrice, getTotalPriceWithFees } = cartSlice.actions;
 
 export default cartSlice.reducer;

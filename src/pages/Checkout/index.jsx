@@ -1,7 +1,6 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
-import { DELIVERY_FREE, TAX } from '../../utils/constantes';
 import { addOrder } from '../../store/features/orderSlice';
 import { resetCart } from '../../store/features/cartSlice';
 
@@ -212,17 +211,13 @@ const OrderTotalPrice = calculatedPrices.reduce((sum, item) => sum + item.totalP
                   <span>Subtotal</span>
                   <span>{OrderTotalPrice} TND</span>
                 </div>
-                <div className="flex justify-between text-gray-600">
-                  <span>Delivery Fee</span>
-                  <span>{DELIVERY_FREE} TND</span>
-                </div>
               </div>
 
               <hr className="my-4" />
 
               <div className="flex justify-between text-lg font-bold mb-6">
                 <span>Total</span>
-                <span>{(OrderTotalPrice + DELIVERY_FREE).toFixed(2)} TND </span>
+                <span>{OrderTotalPrice.toFixed(2)} TND </span>
               </div>
 
               <button
@@ -238,7 +233,7 @@ const OrderTotalPrice = calculatedPrices.reduce((sum, item) => sum + item.totalP
                       price: item.price,
                       quantity: item.quantity
                     })),
-                    total: (OrderTotalPrice + DELIVERY_FREE).toFixed(2),
+                    total: OrderTotalPrice.toFixed(2),
                     status: 'pending',
                     address: 'Address from form', // You can get this from form state
                     createdAt: new Date().toISOString()

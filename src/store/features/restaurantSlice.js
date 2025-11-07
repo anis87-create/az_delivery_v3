@@ -33,9 +33,10 @@ const  restaurantSlice = createSlice({
                     acceptCash: true,
                     acceptCard: true,
                     acceptMobilePayment: false,
-                    minimumOrderAmount: 0,
-                    deliveryFee: 0,
-                    taxRate: 0
+                    minimumOrderAmount: 0
+                },
+                deliverySettings: {
+                    baseFee: 3 // Frais de livraison fixes
                 },
                 createdAt: new Date().toISOString()
             };
@@ -53,14 +54,15 @@ const  restaurantSlice = createSlice({
            }
 
            localStorage.setItem('restaurants', JSON.stringify(state.restaurants));
-        }
+        },
     },
 })
 
 export const { createRestaurant, resetRestaurants, updateRestaurant } = restaurantSlice.actions;
 
 // Selector pour obtenir les restaurants d'un propriétaire
-export const getRestaurantsByOwner = (state, ownerId) => 
-    state.restaurant.restaurants.find(restaurant => restaurant.ownerId === ownerId) || null;
+export const getRestaurantsByOwner = (state, ownerId) => {   
+ return   state.restaurant.restaurants.find(restaurant => restaurant.ownerId === ownerId) || null;
+}   
 
 export default restaurantSlice.reducer;

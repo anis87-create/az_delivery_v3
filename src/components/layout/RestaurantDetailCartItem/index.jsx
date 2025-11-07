@@ -1,8 +1,8 @@
 import { restaurants } from '../../../data/restaurants';
-import { useDispatch } from 'react-redux';
-import { deleteItem, getSubTotalPrice, updateQuantity } from '../../../store/features/cartSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { deleteItem, getSubTotalPrice, getTotalPriceWithFees, updateQuantity } from '../../../store/features/cartSlice';
 import { usdToTnd } from '../../../utils/helpers';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 
 /**
  * Cart item component that displays individual food items in the cart
@@ -15,14 +15,26 @@ import { useCallback, useState } from 'react';
 
 const RestaurantDetailCartItem = ({item}) => {
    const dispatch = useDispatch();
+   const { restaurants } = useSelector(state => state.restaurant);
 
    // Helper function to find restaurant name by ID
-   const findRestaurantNameById = (id) => restaurants.find(restaurant => restaurant.id === id)?.name || 'Unknown Restaurant';
+   const findRestaurantById = (id) => {
+    return restaurants.find(restaurant => restaurant.id === id) || 'Unknown Restaurant';
+  }
 
+  
    // Memoized restaurant name lookup for performance
    const findRestaurantName = useCallback(() => {
-      return findRestaurantNameById(item.restaurantId);
+      return findRestaurantById(item.restaurantId);
    }, [item.restaurantId]);
+
+   const { cartItems } = useSelector(state => state.cart);
+   
+   // Get all restaurants that have items in cart
+   const getCartRestaurants = () => {
+     const uniqueRestaurantIds = [...new Set(cartItems.map(item => item.restaurantId))];
+     return restaurants.filter(r => uniqueRestaurantIds.includes(r.id));
+   };
    /**
     * Handle quantity decrement
     * If quantity is 1, remove item from cart
@@ -33,10 +45,18 @@ const RestaurantDetailCartItem = ({item}) => {
           // Remove item if quantity would become 0
           dispatch(deleteItem(item));
           dispatch(getSubTotalPrice());
+          const cartRestaurants = getCartRestaurants();
+          if (cartRestaurants.length > 0) {
+            dispatch(getTotalPriceWithFees({ restaurants: cartRestaurants }));
+          }
         }else {
          // Decrease quantity by 1
          dispatch(updateQuantity({...item, quantity: item.quantity - 1}));
          dispatch(getSubTotalPrice());
+         const cartRestaurants = getCartRestaurants();
+         if (cartRestaurants.length > 0) {
+           dispatch(getTotalPriceWithFees({ restaurants: cartRestaurants }));
+         }
      }
    }
 
@@ -47,6 +67,10 @@ const RestaurantDetailCartItem = ({item}) => {
    const incrementQuantity = () => {
         dispatch(updateQuantity({...item, quantity: item.quantity + 1}));
         dispatch(getSubTotalPrice());
+        const cartRestaurants = getCartRestaurants();
+        if (cartRestaurants.length > 0) {
+          dispatch(getTotalPriceWithFees({ restaurants: cartRestaurants }));
+        }
     }
   return (
     <div key={item.id} className='flex items-center gap-4 p-4 border rounded-lg'>
@@ -60,8 +84,8 @@ const RestaurantDetailCartItem = ({item}) => {
       {/* Item Details */}
       <div className='flex-1'>
         <h3 className='font-semibold text-gray-900'>{item.name}</h3>
-        <p className='text-gray-600 text-sm'>{findRestaurantName()}</p>
-        <p className='text-orange-500 font-semibold'>{usdToTnd(item.price)} TND</p>
+        <p className='text-gray-600 text-sm'>{findRestaurantName().name}</p>
+        <p className='text-orange-500 font-semibold'>{item.price} TND</p>
       </div>
 
       {/* Quantity Controls */}
@@ -82,7 +106,14 @@ const RestaurantDetailCartItem = ({item}) => {
         {/* Delete item button */}
         <button
           className='ml-2 text-orange-500 hover:text-orange-600 transition-colors'
-          onClick={() => dispatch(deleteItem(item))}
+          onClick={() => {
+            dispatch(deleteItem(item));
+            dispatch(getSubTotalPrice());
+            const cartRestaurants = getCartRestaurants();
+            if (cartRestaurants.length > 0) {
+              dispatch(getTotalPriceWithFees({ restaurants: cartRestaurants }));
+            }
+          }}
           aria-label="Delete item"
         >
           🗑️

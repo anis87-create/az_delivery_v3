@@ -3,10 +3,8 @@ import { HiTrash } from 'react-icons/hi'
 import {  useDispatch, useSelector } from 'react-redux';
 import RestaurantDetailCartItem from '../../components/layout/RestaurantDetailCartItem';
 import { Link, useNavigate } from 'react-router';
-import { usdToTnd } from '../../utils/helpers';
-import { getSubTotalPrice, resetCart } from '../../store/features/cartSlice';
+import { getSubTotalPrice, getTotalPriceWithFees, resetCart } from '../../store/features/cartSlice';
 import Swal from 'sweetalert2';
-import { DELIVERY_FREE, TAX } from '../../utils/constantes';
 
 /**
  * Cart page component that displays shopping cart items and order summary
@@ -21,15 +19,21 @@ const Cart = () => {
   const dispatch  = useDispatch();
 
   // Get cart state from Redux store
-  const { cartItems, subTotalPrice } = useSelector(state => state.cart);
+  const { cartItems, subTotalPrice, totalWithFees } = useSelector(state => state.cart);
   const { currentUser } = useSelector(state => state.auth);
-  const cartItemsByUser =  cartItems.filter(item => item.userId === currentUser?.id)
-  // Calculate total price including delivery and tax
-  const total = subTotalPrice + DELIVERY_FREE + TAX;
+  const { restaurants } = useSelector(state => state.restaurant);
+  const cartItemsByUser =  cartItems.filter(item => item.userId === currentUser?.id);
+  
+  // Get unique restaurants from cart items
+  const uniqueRestaurantIds = [...new Set(cartItemsByUser.map(item => item.restaurantId))];
+  const cartRestaurants = restaurants.filter(r => uniqueRestaurantIds.includes(r.id));
   const navigate = useNavigate();
   useEffect(() => {
     dispatch(getSubTotalPrice());
-  }, []);
+    if (cartRestaurants.length > 0) {
+      dispatch(getTotalPriceWithFees({ restaurants: cartRestaurants }));
+    }
+  }, [dispatch, cartRestaurants.length]);
 
  
   return (
@@ -65,7 +69,7 @@ const Cart = () => {
         </div>
 
         {/* Main Content */}
-        {cartItemsByUser.length === 0 ? (
+        {cartItems.length === 0 ? (
           /* Empty Cart State */
           <div className='flex flex-col items-center justify-center py-16'>
             <div className='text-center'>
@@ -100,7 +104,7 @@ const Cart = () => {
               <h2 className='text-xl font-semibold mb-6'>Order Items</h2>
 
               <div className='space-y-4'>
-                {cartItemsByUser.map((item) => (
+                {cartItems.map((item) => (
                   <RestaurantDetailCartItem
                     key={item.id}
                     item={item}
@@ -116,15 +120,7 @@ const Cart = () => {
               <div className='space-y-3 mb-4'>
                 <div className='flex justify-between'>
                   <span className='text-gray-600'>Subtotal</span>
-                  <span className='font-semibold'>{subTotalPrice} TND</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span className='text-gray-600'>Delivery Fee</span>
-                  <span className='font-semibold'>{DELIVERY_FREE} TND</span>
-                </div>
-                <div className='flex justify-between'>
-                  <span className='text-gray-600'>Tax</span>
-                  <span className='font-semibold'>{TAX} TND</span>
+                  <span className='font-semibold'>{totalWithFees.subtotal || subTotalPrice} TND</span>
                 </div>
               </div>
 
@@ -132,7 +128,7 @@ const Cart = () => {
 
               <div className='flex justify-between text-lg font-bold mb-6'>
                 <span>Total</span>
-                <span>{total} TND</span>
+                <span>{totalWithFees.total || subTotalPrice} TND</span>
               </div>
 
               <button className='w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors'

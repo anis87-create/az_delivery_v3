@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeItem } from '../../store/features/itemsSlice';
 import MenuItem from './MenuItem';
+import { getRestaurantsByOwner } from '../../store/features/restaurantSlice';
 
 const MenuManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -9,10 +10,11 @@ const MenuManagement = () => {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const {items} = useSelector(state => state.items);
   const { categories } = useSelector(state => state.categories);
+  const {currentUser} = useSelector(state => state.auth);
   const dispatch = useDispatch();
-
+  const restaurant = useSelector(state => getRestaurantsByOwner(state, currentUser.id));
   // Grouper les items par categoryId
-  const grouped = items.reduce((acc, item) => {
+  const grouped = items.filter(item => item.restaurantId === restaurant.id).reduce((acc, item) => {
     const key = item.categoryId;
     if (!acc[key]) {
       acc[key] = [];

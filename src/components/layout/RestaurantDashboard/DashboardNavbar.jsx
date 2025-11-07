@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addCategory, resetCategory } from '../../../store/features/categoriesSlice';
+import { addCategory } from '../../../store/features/categoriesSlice';
 import { getRestaurantsByOwner } from '../../../store/features/restaurantSlice';
 import { addItem } from '../../../store/features/itemsSlice';
 import { logout } from '../../../store/features/authSlice';
@@ -55,15 +55,15 @@ const DashboardNavbar = ({ restaurantName, restaurantEmail, restaurantLogo, curr
 
   const handleAddMenuItem = () => {
     dispatch(addItem({
-      id: items.length,
       restaurantId: restaurant.id,
+      ownerId: currentUser.id,
       categoryId:menuItem.categoryId,
       name: menuItem.name,
       ingredients: menuItem.ingredients,
       price: menuItem.price,
       imageUrl: menuItem.imageUrl,
       available: menuItem.available,
-      popular: menuItem.popular
+      popular: menuItem.popular,
     }));
     setShowAddMenuItemModal(false);
     setMenuItem({
@@ -336,7 +336,7 @@ const DashboardNavbar = ({ restaurantName, restaurantEmail, restaurantLogo, curr
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                 >
                   <option value="">Select a category</option>
-                  {categories?.map((cat) => (
+                  {categories?.filter(category => category.restaurantId === restaurant.id).map((cat) => (
                     <option key={cat.id} value={cat.id}>{cat?.name}</option>
                   ))}
                 </select>

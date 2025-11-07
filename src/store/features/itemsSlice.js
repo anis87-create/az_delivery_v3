@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { v4 as uuidv4 } from 'uuid';
 
 const itemsSlice = createSlice({
     name: 'items',
@@ -15,7 +16,10 @@ const itemsSlice = createSlice({
     },
     reducers: {
        addItem: (state, {payload}) => {
-         state.items.push(payload);
+         state.items.push({
+          id: uuidv4(),
+          ...payload
+         });
          localStorage.setItem('items', JSON.stringify(state.items));
        },
        removeItem: (state, {payload}) => {

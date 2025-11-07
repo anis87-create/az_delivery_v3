@@ -28,21 +28,9 @@ const SettingsManagement = () => {
       sunday: { open: '12:00', close: '21:00', closed: false }
     },
     deliverySettings: {
-      deliveryFee: restaurant?.deliverySettings.deliveryFee || 0,
-      minimumOrder: restaurant?.deliverySettings.minimumOrder || 0,
-      deliveryZone: restaurant?.deliverySettings.deliveryZone || 0,
-      estimatedDeliveryTime: restaurant?.deliverySettings.estimatedDeliveryTime || ''
+      baseFee: restaurant?.deliverySettings?.baseFee || 3,
+      estimatedDeliveryTime: restaurant?.deliverySettings?.estimatedDeliveryTime || ''
     },
-    paymentSettings: {
-      cashOnDelivery: restaurant?.paymentSettings?.cashOnDelivery || false,
-      creditCard: restaurant?.paymentSettings?.creditCard || false ,
-      debitCard: restaurant?.paymentSettings?.creditCard || false,
-      onlinePayment: restaurant?.paymentSettings?.onlinePayment || false
-    },
-    taxSettings: {
-      taxRate: '8.5',
-      pricesIncludeTax: false
-    }
   });
 
   const [selectedFiles, setSelectedFiles] = useState({
@@ -81,25 +69,7 @@ const SettingsManagement = () => {
     
   };
 
-  const handlePaymentSettingsChange = (field, value) => {
-    setRestaurantData(prev => ({
-      ...prev,
-      paymentSettings: {
-        ...prev.paymentSettings,
-        [field]: value
-      }
-    }));
-  };
 
-  const handleTaxSettingsChange = (field, value) => {
-    setRestaurantData(prev => ({
-      ...prev,
-      taxSettings: {
-        ...prev.taxSettings,
-        [field]: value
-      }
-    }));
-  };
 
   const handleSaveChanges = () => {
     // Ici on ajouterait la logique de sauvegarde 
@@ -107,14 +77,13 @@ const SettingsManagement = () => {
     ...restaurant,
     openingHours: restaurantData.openingHours,
     deliverySettings: restaurantData.deliverySettings,
-    paymentSettings: restaurantData.paymentSettings,
     coverImg: restaurantData.coverImg,
     logo: restaurantData.logo
    }
    dispatch(updateRestaurant(obj));
   };
 
-  const tabs = ['General', 'Hours', 'Delivery', 'Payment'];
+  const tabs = ['General', 'Hours', 'Delivery'];
 
   const days = [
     { key: 'monday', label: 'Lundi' },
@@ -324,42 +293,21 @@ const SettingsManagement = () => {
           
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Delivery Fee (€)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Frais de livraison (TND)</label>
               <input
                 type="number"
-                step="0.50"
-                value={restaurantData.deliverySettings.deliveryFee}
-                onChange={(e) => handleDeliverySettingsChange('deliveryFee', e.target.value)}
+                step="0.5"
+                value={restaurantData.deliverySettings.baseFee}
+                onChange={(e) => handleDeliverySettingsChange('baseFee', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Minimum Order (€)</label>
-              <input
-                type="number"
-                step="0.50"
-                value={restaurantData.deliverySettings.minimumOrder}
-                onChange={(e) => handleDeliverySettingsChange('minimumOrder', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Delivery Radius (km)</label>
-              <input
-                type='number'
-                value={restaurantData.deliverySettings.deliveryZone}
-                onChange={(e) => handleDeliverySettingsChange('deliveryZone', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Estimated Delivery Time</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Temps de livraison estimé</label>
               <input
                 type="text"
-                placeholder="e.g., 30-45 minutes"
+                placeholder="ex: 30-45 minutes"
                 value={restaurantData.deliverySettings.estimatedDeliveryTime}
                 onChange={(e) => handleDeliverySettingsChange('estimatedDeliveryTime', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
@@ -369,131 +317,6 @@ const SettingsManagement = () => {
         </div>
       )}
 
-      {activeTab === 'Payment' && (
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-6">Payment and Tax</h3>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Payment Methods */}
-            <div>
-              <h4 className="text-md font-medium text-gray-900 mb-4">Payment Methods</h4>
-              
-              <div className="space-y-4">
-                {/* Cash on Delivery */}
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-gray-700">Cash on Delivery</label>
-                  <button
-                    type="button"
-                    onClick={() => handlePaymentSettingsChange('cashOnDelivery', !restaurantData.paymentSettings.cashOnDelivery)}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full ${
-                      restaurantData.paymentSettings.cashOnDelivery ? 'bg-orange-600' : 'bg-gray-200'
-                    }`}
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
-                        restaurantData.paymentSettings.cashOnDelivery ? 'translate-x-6' : 'translate-x-1'
-                      }`}
-                    />
-                  </button>
-                </div>
-
-                {/* Credit Card */}
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-gray-700">Credit Card</label>
-                  <button
-                    type="button"
-                    onClick={() => handlePaymentSettingsChange('creditCard', !restaurantData.paymentSettings.creditCard)}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full ${
-                      restaurantData.paymentSettings.creditCard ? 'bg-orange-600' : 'bg-gray-200'
-                    }`}
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
-                        restaurantData.paymentSettings.creditCard ? 'translate-x-6' : 'translate-x-1'
-                      }`}
-                    />
-                  </button>
-                </div>
-
-                {/* Debit Card */}
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-gray-700">Debit Card</label>
-                  <button
-                    type="button"
-                    onClick={() => handlePaymentSettingsChange('debitCard', !restaurantData.paymentSettings.debitCard)}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full ${
-                      restaurantData.paymentSettings.debitCard ? 'bg-orange-600' : 'bg-gray-200'
-                    }`}
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
-                        restaurantData.paymentSettings.debitCard ? 'translate-x-6' : 'translate-x-1'
-                      }`}
-                    />
-                  </button>
-                </div>
-
-                {/* Online Payment */}
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-gray-700">Online Payment</label>
-                  <button
-                    type="button"
-                    onClick={() => handlePaymentSettingsChange('onlinePayment', !restaurantData.paymentSettings.onlinePayment)}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full ${
-                      restaurantData.paymentSettings.onlinePayment ? 'bg-orange-600' : 'bg-gray-200'
-                    }`}
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
-                        restaurantData.paymentSettings.onlinePayment ? 'translate-x-6' : 'translate-x-1'
-                      }`}
-                    />
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Tax Settings */}
-            <div>
-              <h4 className="text-md font-medium text-gray-900 mb-4">Tax Settings</h4>
-              
-              <div className="space-y-4">
-                {/* Tax Rate */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Tax Rate (%)</label>
-                  <input
-                    type="number"
-                    step="0.1"
-                    min="0"
-                    max="100"
-                    value={restaurantData.taxSettings.taxRate}
-                    onChange={(e) => handleTaxSettingsChange('taxRate', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
-                  />
-                </div>
-
-                {/* Prices Include Tax */}
-                <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-gray-700">Prices Include Tax</label>
-                  <button
-                    type="button"
-                    onClick={() => handleTaxSettingsChange('pricesIncludeTax', !restaurantData.taxSettings.pricesIncludeTax)}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full ${
-                      restaurantData.taxSettings.pricesIncludeTax ? 'bg-orange-600' : 'bg-gray-200'
-                    }`}
-                  >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
-                        restaurantData.taxSettings.pricesIncludeTax ? 'translate-x-6' : 'translate-x-1'
-                      }`}
-                    />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

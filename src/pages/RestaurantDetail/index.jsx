@@ -3,13 +3,11 @@ import { useParams } from 'react-router'
 import { FaStar, FaArrowLeft, FaPlus, FaMinus, FaHeart, FaPaperPlane, FaTrash } from 'react-icons/fa'
 import { MdAccessTime } from 'react-icons/md'
 import { Link } from 'react-router'
-import { getRestaurantById } from '../../data/restaurants'
-import { getItemsByRestaurantId } from '../../data/items'
-import { getCommentsByRestaurantId, getTotalCommentsCount } from '../../data/comments'
+import {  getTotalCommentsCount } from '../../data/comments'
 import Avatar from '../../components/common/Avatar'
 import { useDispatch, useSelector } from 'react-redux'
 import QuantityContainer from '../../components/layout/QuantityContainer'
-import { addComment, removeComment, resetComments, toggleLike } from '../../store/features/commentSlice'
+import { addComment, removeComment, toggleLike } from '../../store/features/commentSlice'
 
 const RestaurantDetail = () => {
   const { id } = useParams();
@@ -104,10 +102,10 @@ const RestaurantDetail = () => {
             </div>
             <div className="flex items-center gap-1">
               <MdAccessTime />
-              <span>{restaurant.time} min</span>
+              <span>{restaurant.deliverySettings?.estimatedDeliveryTime || '10-30 min'}</span>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 mb-3">
             {restaurant.tags.map((tag, index) => (
               <span 
                 key={index}
@@ -116,6 +114,12 @@ const RestaurantDetail = () => {
                 {tag}
               </span>
             ))}
+          </div>
+          {/* Delivery Info */}
+          <div className="flex gap-4 text-sm">
+            <span className="bg-orange-500/80 backdrop-blur-sm px-3 py-1 rounded-full">
+              Delivery: {restaurant.deliverySettings?.deliveryFee || 0} TND
+            </span>
           </div>
         </div>
       </div>
@@ -157,7 +161,8 @@ const RestaurantDetail = () => {
                   </div>
                   
                   {/* Contrôles de quantité */}
-                  <QuantityContainer
+                  <QuantityContainer 
+                   key={item.id}
                    addItem={addItem}
                    item={item}
                   />

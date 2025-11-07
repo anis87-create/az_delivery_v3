@@ -377,10 +377,10 @@ const Home = () => {
               <Restaurant
                 key={place.id}
                 id={place.id}
-                img={place.img}
+                img={place.coverImg}
                 name={place.name}
                 rate={place.rate}
-                time={place.time}
+                time={'10-30'}
                 tags={place.tags}
                 userId= {currentUser?.id}
                 isActive ={ favoriteIds.has(place.id) }
@@ -412,7 +412,7 @@ const Home = () => {
                 img={restaurant.coverImg}
                 name={restaurant.name}
                 rate={restaurant.rate}
-                time={restaurant.time}
+                time={restaurant.deliverySettings.estimatedDeliveryTime}
                 tags={restaurant.tags}
                 userId= {currentUser?.id}
                 isActive ={ favoriteIds.has(restaurant.id) }
