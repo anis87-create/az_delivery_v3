@@ -16,7 +16,6 @@ const Orders = () => {
   const [activeTab, setActiveTab] = useState('all');
   const { orders } = useSelector(state => state.order);
   const { currentUser } = useSelector(state => state.auth);
-
   // Filter orders by current user
   const userOrders = orders?.filter(order => order.userId === currentUser?.id) || [];
   const dispatch = useDispatch();
@@ -26,7 +25,7 @@ const Orders = () => {
     return userOrders.filter(order => order.status === activeTab);
   };
   useEffect(() => {
-    //dispatch(clearOrders());
+      //dispatch(clearOrders());
   },[]);
   // Get status icon and color
   const getStatusConfig = (status) => {

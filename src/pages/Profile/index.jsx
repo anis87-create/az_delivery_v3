@@ -13,7 +13,7 @@ const Profile = () => {
   const avgRate = sumAvg/restaurants.length;
  
   const getSumItemsPrice = () => {
-    return cartItems.reduce((acc, currentValue) => acc + currentValue.price, 0);
+    return orders.reduce((acc, currentValue) => acc + currentValue.total, 0);
   }
 
   const getOrdersNumberByUser = () => {

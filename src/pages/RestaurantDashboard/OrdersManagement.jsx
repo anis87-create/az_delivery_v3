@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 const OrdersManagement = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('All');
+  const {users} = useSelector(state => state.auth);
   // Mock orders data
-  const [orders, setOrders] = useState([
+  /*const [orders, setOrders] = useState([
     {
       id: 1,
       orderId: '#ORD-001',
@@ -61,7 +63,8 @@ const OrdersManagement = () => {
         { name: 'Tiramisu', quantity: 2 }
       ]
     }
-  ]);
+  ]);*/
+  const { orders } = useSelector(state => state.order);
 
   const filterOptions = ['All', 'New', 'Preparing', 'Ready', 'Completed'];
   const statusOptions = ['New', 'Preparing', 'Ready', 'Completed'];
@@ -96,16 +99,18 @@ const OrdersManagement = () => {
       return `${days} ${days === 1 ? 'day' : 'days'} ago`;
     }
   };
+  const findCustomerNameById = (userId) => {
+     return users.find(user => user.id === userId)?.fullName;
+  }
 
   const handleStatusChange = (orderId, newStatus) => {
-    setOrders(orders.map(order => 
+    /*setOrders(orders.map(order => 
       order.id === orderId ? { ...order, status: newStatus } : order
-    ));
+    ));*/
   };
 
   const filteredOrders = orders.filter(order => {
-    const matchesSearch = order.orderId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         order.customer.fullName.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = findCustomerNameById(order.userId).toLowerCase().includes(searchQuery.toLowerCase());
     const matchesFilter = selectedFilter === 'All' || order.status === selectedFilter;
     return matchesSearch && matchesFilter;
   });
@@ -176,7 +181,7 @@ const OrdersManagement = () => {
             {/* Customer */}
             <div className="mb-3">
               <p className="text-sm text-gray-600 mb-1">Customer</p>
-              <p className="font-medium text-gray-900">{order.customer.fullName}</p>
+              <p className="font-medium text-gray-900">{findCustomerNameById(order.userId)}</p>
             </div>
 
             {/* Items */}

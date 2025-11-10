@@ -7,7 +7,8 @@ import { resetCart } from '../../store/features/cartSlice';
 const Checkout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const {cartItems} = useSelector(state => state.cart);
+  const {cartItems,  subTotalPrice, totalWithFees} = useSelector(state => state.cart);
+
   const { currentUser } = useSelector(state => state.auth);
   const groupedByCategory = cartItems.reduce((acc, item) => {
   const key = item.name;
@@ -217,7 +218,7 @@ const OrderTotalPrice = calculatedPrices.reduce((sum, item) => sum + item.totalP
 
               <div className="flex justify-between text-lg font-bold mb-6">
                 <span>Total</span>
-                <span>{OrderTotalPrice.toFixed(2)} TND </span>
+                <span>{totalWithFees.total || subTotalPrice} TND </span>
               </div>
 
               <button
@@ -233,7 +234,7 @@ const OrderTotalPrice = calculatedPrices.reduce((sum, item) => sum + item.totalP
                       price: item.price,
                       quantity: item.quantity
                     })),
-                    total: OrderTotalPrice.toFixed(2),
+                    total: totalWithFees.total,
                     status: 'pending',
                     address: 'Address from form', // You can get this from form state
                     createdAt: new Date().toISOString()

@@ -11,9 +11,11 @@ const Navbar = () => {
   const { currentUser, isAuth } = useSelector(state => state.auth);
   const { cartItems } = useSelector(state => state.cart);
   const { favorites } = useSelector(state => state.favorites);
+  const { orders } = useSelector(state => state.order);
 
   const totalQuantity = currentUser?.id ? cartItems.filter(item => item.userId === currentUser.id).reduce((acc, item) => acc + item.quantity, 0) : 0;
   const totalFavorites = currentUser?.id ? favorites.filter(favorite => favorite.userId === currentUser.id).length : 0;
+  const numberOfOrders = currentUser?.id ? orders.filter(order => order.userId === currentUser.id && (order.status === 'pending' || order.status === 'preparing' || order.status === 'on_the_way')).length : 0;
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -86,8 +88,13 @@ const Navbar = () => {
                       </Link>
                     </li>
                     <li className='inline-block align-middle'>
-                      <Link to={`/orders`} className='flex items-center p-[10px] hover:text-green-500 transition-colors'>
+                      <Link to={`/orders`} className='flex items-center p-[10px] hover:text-green-500 transition-colors relative'>
                         <HiOutlineDocumentText className="w-5 h-5 sm:mr-1.5" />
+                        {numberOfOrders > 0 && (
+                          <span className="absolute -top-1 -right-2 bg-orange-500 text-white text-xs rounded-full min-w-[20px] h-5 flex items-center justify-center">
+                            {numberOfOrders}
+                          </span>
+                        )}
                         <span className='hidden md:inline md:ml-[6px]'>Orders</span>
                       </Link>
                     </li>
@@ -182,8 +189,13 @@ const Navbar = () => {
                     </Link>
                   </li>
                   <li>
-                    <Link to="/orders" className='flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors'>
+                    <Link to="/orders" className='flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors relative'>
                       <HiOutlineDocumentText className="w-5 h-5 mr-3" />
+                      {numberOfOrders > 0 && (
+                        <span className="absolute top-0 -right-1 bg-orange-500 text-white text-xs rounded-full min-w-[20px] h-5 flex items-center justify-center">
+                          {numberOfOrders}
+                        </span>
+                      )}
                       <span>Orders</span>
                     </Link>
                   </li>

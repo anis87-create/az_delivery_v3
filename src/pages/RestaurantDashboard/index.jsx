@@ -1,13 +1,16 @@
 
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 const RestaurantDashboard = () => {
-  const [orders, setOrders] = useState([
+  /*const [orders, setOrders] = useState([
     { id: 1, orderId: '#ORD-001', customer: 'Jean Dupont', status: 'delivered', amount: '45.50€', time: '14:30' },
     { id: 2, orderId: '#ORD-002', customer: 'Marie Martin', status: 'in_progress', amount: '32.00€', time: '15:15' },
     { id: 3, orderId: '#ORD-003', customer: 'Pierre Durand', status: 'preparing', amount: '28.75€', time: '15:45' }
-  ]);
-
+  ]);*/
+  const {orders} = useSelector(state => state.order);
+  const {users} = useSelector(state => state.auth);
+   
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
 
   const statusOptions = [
@@ -23,15 +26,33 @@ const RestaurantDashboard = () => {
   };
 
   const handleStatusChange = (orderId, newStatus) => {
-    setOrders(orders.map(order => 
+   /* setOrders(orders.map(order => 
       order.id === orderId ? { ...order, status: newStatus } : order
-    ));
+    ));*/
   };
 
   const handleDeleteOrder = (orderId) => {
-    setOrders(orders.filter(order => order.id !== orderId));
-    setShowDeleteConfirm(null);
+    /*setOrders(orders.filter(order => order.id !== orderId));
+    setShowDeleteConfirm(null);*/
   };
+
+  const findCustomerNameById = (userId) => {
+     return users.find(user => user.id === userId)?.fullName;
+  }
+
+  const getTotalOrders = (orders) => {
+
+    return orders.reduce((sum, current) => sum + current.total, 0);
+  }
+  const getTime = (string) => {
+    const dateObjectFromString = new Date(string);
+    const hourFromString = dateObjectFromString.getHours();
+    const minuteFromString = dateObjectFromString.getMinutes();
+    console.log(dateObjectFromString);
+    
+    return `${hourFromString}:${minuteFromString}`;
+
+  }
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Page Header */}
@@ -51,7 +72,7 @@ const RestaurantDashboard = () => {
             </div>
             <div className="ml-3 sm:ml-4 min-w-0 flex-1">
               <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">Today's Orders</p>
-              <p className="text-xl sm:text-2xl font-bold text-gray-900">24</p>
+              <p className="text-xl sm:text-2xl font-bold text-gray-900">{orders.length}</p>
             </div>
           </div>
         </div>
@@ -65,7 +86,7 @@ const RestaurantDashboard = () => {
             </div>
             <div className="ml-3 sm:ml-4 min-w-0 flex-1">
               <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">Today's Revenue</p>
-              <p className="text-xl sm:text-2xl font-bold text-gray-900">1,250€</p>
+              <p className="text-xl sm:text-2xl font-bold text-gray-900">{getTotalOrders(orders)} TND</p>
             </div>
           </div>
         </div>
@@ -79,7 +100,7 @@ const RestaurantDashboard = () => {
             </div>
             <div className="ml-3 sm:ml-4 min-w-0 flex-1">
               <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">Pending Orders</p>
-              <p className="text-xl sm:text-2xl font-bold text-gray-900">5</p>
+              <p className="text-xl sm:text-2xl font-bold text-gray-900">{orders.filter(order => order.status==='pending').length}</p>
             </div>
           </div>
         </div>
@@ -114,8 +135,8 @@ const RestaurantDashboard = () => {
                 <div key={order.id} className="p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-900">{order.orderId}</p>
-                      <p className="text-xs text-gray-500">{order.customer}</p>
+                      <p className="text-sm font-medium text-gray-900">{order.id}</p>
+                      <p className="text-xs text-gray-500">{findCustomerNameById(order.userId)}</p>
                     </div>
                     <button
                       onClick={() => setShowDeleteConfirm(order.id)}
@@ -132,11 +153,11 @@ const RestaurantDashboard = () => {
                     <div className="flex items-center space-x-4">
                       <div>
                         <p className="text-xs text-gray-500">Amount</p>
-                        <p className="text-sm font-medium text-gray-900">{order.amount}</p>
+                        <p className="text-sm font-medium text-gray-900">{order.total}</p>
                       </div>
                       <div>
                         <p className="text-xs text-gray-500">Time</p>
-                        <p className="text-sm text-gray-600">{order.time}</p>
+                        <p className="text-sm text-gray-600">{getTime(order.createdAt)}</p>
                       </div>
                     </div>
                     <div>
@@ -191,10 +212,10 @@ const RestaurantDashboard = () => {
                 return (
                   <tr key={order.id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {order.orderId}
+                      ORDER#{order.id}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {order.customer}
+                      {findCustomerNameById(order?.userId)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <select
@@ -210,10 +231,10 @@ const RestaurantDashboard = () => {
                       </select>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {order.amount}
+                      {order?.total} TND
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {order.time}
+                      {getTime(order.createdAt)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <div className="flex space-x-2">
