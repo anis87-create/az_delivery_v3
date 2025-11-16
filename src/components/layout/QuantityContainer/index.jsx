@@ -7,10 +7,8 @@ const QuantityContainer = ({item, addItem}) => {
   const [counter, setCounter] = useState(1); 
   const dispatch = useDispatch();
   const {cartItems} = useSelector(state => state.cart);
-  const {currentUser} = useSelector(state => state.auth) 
+  const {isAuth, currentUser} = useSelector(state => state.auth) 
   useEffect(() => {
-    console.log(item.id);
-    
     if (currentUser?.id) {
       const itemFound = cartItems.find(i => i.id === item?.id);  
       if(itemFound){
@@ -74,17 +72,19 @@ const QuantityContainer = ({item, addItem}) => {
       </div>
     )
   }
-
-  return (
-    <div className="mt-3 flex items-center justify-between">
-      <button
-        onClick={handleClick}
-        className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-colors duration-200 active:scale-95 transform"
-      >
-        Add
-      </button>
-    </div>
-  );
+  if(isAuth=== true){
+    return (
+        <div className="mt-3 flex items-center justify-between">
+          <button
+            onClick={handleClick}
+            className="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-colors duration-200 active:scale-95 transform"
+          >
+            Add
+          </button>
+        </div>
+    );
+  }
+  
 }
 
 export default QuantityContainer

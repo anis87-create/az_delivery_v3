@@ -3,12 +3,11 @@ import { Link } from 'react-router'
 import { FaStar } from 'react-icons/fa';
 import { MdAccessTime } from 'react-icons/md';
 import { HiChevronRight, HiOutlineHeart } from 'react-icons/hi';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addToFavorites, deletFromFavories } from '../../store/features/favoritesSlice';
 
 const Restaurant = React.memo(({id, img, name, rate, time, tags, isActive, userId}) => {
-  
-
+  const {isAuth} = useSelector(state=> state.auth);
   const dispatch = useDispatch();
   return (
     <Link to={`/restaurant/${id}`} className='block'>
@@ -18,7 +17,7 @@ const Restaurant = React.memo(({id, img, name, rate, time, tags, isActive, userI
         <img src={img} alt={name} className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110" />
 
         {/* Heart Icon - Top Left */}
-        <button
+        {isAuth && <button
           className="absolute top-4 left-4 z-20 bg-white/90 backdrop-blur-sm p-2 rounded-full shadow-lg hover:bg-white hover:scale-110 transition-all duration-300"
           aria-label="Add to favorites"
           onClick={(e) => {
@@ -33,6 +32,8 @@ const Restaurant = React.memo(({id, img, name, rate, time, tags, isActive, userI
         >
           <HiOutlineHeart className={`${isActive ?"fill-current hover:text-orange-600":"text-orange-600 text-xl hover:fill-current"} text-orange-600 text-xl hover:fill-current`} />
         </button>
+        }
+        
 
         {/* Rating Badge - Top Right */}
         <div className="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-4 group-hover:translate-x-0">

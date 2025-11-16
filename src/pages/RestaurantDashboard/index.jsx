@@ -1,6 +1,8 @@
 
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { HiSearch, HiEye, HiPlus } from 'react-icons/hi';
+import { deleteOrder, updateOrderStatus, addOrder } from '../../store/features/orderSlice';
 
 const RestaurantDashboard = () => {
   /*const [orders, setOrders] = useState([
@@ -12,10 +14,13 @@ const RestaurantDashboard = () => {
   const {users} = useSelector(state => state.auth);
    
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const dispatch = useDispatch();
 
   const statusOptions = [
-    { value: 'preparing', label: 'Preparing', bgColor: 'bg-blue-100', textColor: 'text-blue-800' },
-    { value: 'in_progress', label: 'In Progress', bgColor: 'bg-yellow-100', textColor: 'text-yellow-800' },
+    { value: 'pending', label: 'Pending', bgColor: 'bg-yellow-100', textColor: 'text-yellow-800' },
+    { value: 'confirmed', label: 'Confirmed', bgColor: 'bg-blue-100', textColor: 'text-blue-800' },
+    { value: 'delivering', label: 'Delivering', bgColor: 'bg-purple-100', textColor: 'text-purple-800' },
     { value: 'delivered', label: 'Delivered', bgColor: 'bg-green-100', textColor: 'text-green-800' },
     { value: 'cancelled', label: 'Cancelled', bgColor: 'bg-red-100', textColor: 'text-red-800' }
   ];
@@ -26,14 +31,12 @@ const RestaurantDashboard = () => {
   };
 
   const handleStatusChange = (orderId, newStatus) => {
-   /* setOrders(orders.map(order => 
-      order.id === orderId ? { ...order, status: newStatus } : order
-    ));*/
+    dispatch(updateOrderStatus({orderId, status: newStatus}));    
   };
 
   const handleDeleteOrder = (orderId) => {
-    /*setOrders(orders.filter(order => order.id !== orderId));
-    setShowDeleteConfirm(null);*/
+    dispatch(deleteOrder({orderId}));
+    setShowDeleteConfirm(null);
   };
 
   const findCustomerNameById = (userId) => {
@@ -48,11 +51,21 @@ const RestaurantDashboard = () => {
     const dateObjectFromString = new Date(string);
     const hourFromString = dateObjectFromString.getHours();
     const minuteFromString = dateObjectFromString.getMinutes();
-    console.log(dateObjectFromString);
-    
     return `${hourFromString}:${minuteFromString}`;
 
   }
+
+  // Filter orders based on search query
+  const filteredOrders = orders?.filter(order => {
+    const customerName = findCustomerNameById(order.userId)?.toLowerCase() || '';
+    const orderId = order.id.toString().toLowerCase();
+    const status = order?.status?.toLowerCase();
+    const query = searchQuery.toLowerCase();
+    
+    return customerName.includes(query) || 
+           orderId.includes(query) || 
+           status.includes(query);
+  });
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Page Header */}
@@ -123,30 +136,52 @@ const RestaurantDashboard = () => {
       {/* Recent Orders */}
       <div className="bg-white rounded-lg shadow">
         <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
-          <h3 className="text-base sm:text-lg font-medium text-gray-900">Recent Orders</h3>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <h3 className="text-base sm:text-lg font-medium text-gray-900">Recent Orders</h3>
+            <div className="relative w-full sm:w-64">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <HiSearch className="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                placeholder="Search orders..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-orange-500 focus:border-orange-500 text-sm"
+              />
+            </div>
+          </div>
         </div>
         
         {/* Mobile view - Cards */}
         <div className="md:hidden">
           <div className="divide-y divide-gray-200">
-            {orders.map((order) => {
+            {filteredOrders.map((order) => {
               const statusDisplay = getStatusDisplay(order.status);
               return (
                 <div key={order.id} className="p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-900">{order.id}</p>
+                      <p className="text-sm font-medium text-gray-900">ORDER#{order.id}</p>
                       <p className="text-xs text-gray-500">{findCustomerNameById(order.userId)}</p>
                     </div>
-                    <button
-                      onClick={() => setShowDeleteConfirm(order.id)}
-                      className="text-red-600 hover:text-red-900 hover:bg-red-50 p-2 rounded"
-                      title="Delete"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
+                    <div className="flex space-x-2">
+                      <button
+                        className="text-blue-600 hover:text-blue-900 hover:bg-blue-50 p-2 rounded"
+                        title="View Details"
+                      >
+                        <HiEye className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => setShowDeleteConfirm(order.id)}
+                        className="text-red-600 hover:text-red-900 hover:bg-red-50 p-2 rounded"
+                        title="Delete"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                   
                   <div className="flex items-center justify-between">
@@ -207,7 +242,7 @@ const RestaurantDashboard = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {orders.map((order) => {
+              {filteredOrders.map((order) => {
                 const statusDisplay = getStatusDisplay(order.status);
                 return (
                   <tr key={order.id}>
@@ -238,6 +273,12 @@ const RestaurantDashboard = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <div className="flex space-x-2">
+                        <button
+                          className="text-blue-600 hover:text-blue-900 hover:bg-blue-50 p-1 rounded"
+                          title="View Details"
+                        >
+                          <HiEye className="w-4 h-4" />
+                        </button>
                         <button
                           onClick={() => setShowDeleteConfirm(order.id)}
                           className="text-red-600 hover:text-red-900 hover:bg-red-50 p-1 rounded"

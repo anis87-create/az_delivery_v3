@@ -2,16 +2,17 @@ import React from 'react'
 import { HiUser, HiMail, HiPhone, HiLocationMarker, HiPencil } from 'react-icons/hi'
 import Avatar from '../../components/common/Avatar'
 import { useSelector } from 'react-redux'
-import { restaurants } from '../../data/restaurants'
 
 const Profile = () => {
   const { currentUser } = useSelector(state => state.auth);
-  const { cartItems } = useSelector(state => state.cart)
   const {orders} = useSelector(state => state.order);
+  const { favorites } = useSelector(state => state.favorites);
+  const {restaurants} = useSelector(state => state.restaurant);
 
-  const sumAvg = restaurants.reduce((acc, currentValue) => acc + currentValue.rate, 0);
+  const sumAvg = restaurants.reduce((acc, currentValue) => acc + currentValue?.rating|0, 0);
   const avgRate = sumAvg/restaurants.length;
- 
+
+  
   const getSumItemsPrice = () => {
     return orders.reduce((acc, currentValue) => acc + currentValue.total, 0);
   }
@@ -19,7 +20,6 @@ const Profile = () => {
   const getOrdersNumberByUser = () => {
     return orders.filter(order => order.userId === currentUser.id).length;
   }
-
  
 
   return (
@@ -123,7 +123,7 @@ const Profile = () => {
                 <p className="text-purple-100 text-sm">Avg Rating</p>
               </div>
               <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-6 rounded-lg text-center">
-                <p className="text-3xl font-bold">0</p>
+                <p className="text-3xl font-bold">{favorites.length}</p>
                 <p className="text-orange-100 text-sm">Favorite Items</p>
               </div>
             </div>

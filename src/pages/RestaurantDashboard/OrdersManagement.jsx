@@ -66,19 +66,21 @@ const OrdersManagement = () => {
   ]);*/
   const { orders } = useSelector(state => state.order);
 
-  const filterOptions = ['All', 'New', 'Preparing', 'Ready', 'Completed'];
-  const statusOptions = ['New', 'Preparing', 'Ready', 'Completed'];
+  const filterOptions = ['All', 'pending', 'confirmed', 'delivering', 'delivered', 'cancelled'];
+  const statusOptions = ['pending', 'confirmed', 'delivering', 'delivered', 'cancelled'];
 
   const getStatusColor = (status) => {
     switch(status) {
-      case 'New':
-        return 'bg-blue-100 text-blue-800';
-      case 'Preparing':
+      case 'pending':
         return 'bg-yellow-100 text-yellow-800';
-      case 'Ready':
+      case 'confirmed':
+        return 'bg-blue-100 text-blue-800';
+      case 'delivering':
+        return 'bg-purple-100 text-purple-800';
+      case 'delivered':
         return 'bg-green-100 text-green-800';
-      case 'Completed':
-        return 'bg-gray-100 text-gray-800';
+      case 'cancelled':
+        return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -164,7 +166,7 @@ const OrdersManagement = () => {
               <div className="flex items-center space-x-3">
                 <h3 className="font-semibold text-gray-900">{order.orderId}</h3>
                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
-                  {order.status === 'New' ? 'New order' : order.status}
+                  {order.status}
                 </span>
               </div>
               <span className="text-lg font-bold text-gray-900">{order.price}</span>

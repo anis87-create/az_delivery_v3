@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import sliderImg from '../../../src/assets/images/slider_img.avif';
-import { HiChevronLeft, HiChevronRight } from 'react-icons/hi';
+import { HiChevronLeft, HiChevronRight, HiSearch, HiEye } from 'react-icons/hi';
 import Category from '../../components/layout/Category';
 import Restaurant from '../Restaurant';
 import RestaurantCard from '../../components/layout/RestaurantCard';
@@ -94,11 +94,14 @@ const sliderImages = [
 
 const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showOrders, setShowOrders] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const {favorites} = useSelector(state => state.favorites);
   const { currentUser } = useSelector(state => state.auth);
   const {restaurants } = useSelector(state => state.restaurant);
+  const { orders } = useSelector(state => state.order);
   // Optimize favorites lookup with Set for O(1) performance
   const favoriteIds = useMemo(() => {
     return new Set(favorites.map(fav => fav.id));

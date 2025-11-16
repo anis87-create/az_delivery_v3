@@ -1,7 +1,8 @@
-import React from 'react'
-import { useSelector } from 'react-redux'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import Restaurant from '../Restaurant'
 import { HiOutlineHeart } from 'react-icons/hi2'
+import { resetFavorites } from '../../store/features/favoritesSlice'
 
 /**
  * Favorites Page Component
@@ -9,12 +10,15 @@ import { HiOutlineHeart } from 'react-icons/hi2'
  * Shows empty state when no favorites exist
  */
 const Favorites = () => {
-  const { favorites } = useSelector(state => state.favorites)
-  const { currentUser } = useSelector(state => state.auth)
+  const { favorites } = useSelector(state => state.favorites);
+  const { currentUser } = useSelector(state => state.auth);
+  const dispatch = useDispatch();
 
   // Filter favorites by current user
   const userFavorites = favorites.filter(favorite => favorite.userId === currentUser.id)
-
+  useEffect(() =>  {
+  //dispatch(resetFavorites());
+}, []);
   return (
     <main className='mt-[8.125rem] flex-1 min-h-screen'>
       <div className='container mx-auto w-[90%] my-8 md:my-12 lg:my-16'>

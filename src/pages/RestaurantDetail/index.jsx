@@ -8,6 +8,7 @@ import Avatar from '../../components/common/Avatar'
 import { useDispatch, useSelector } from 'react-redux'
 import QuantityContainer from '../../components/layout/QuantityContainer'
 import { addComment, removeComment, toggleLike } from '../../store/features/commentSlice'
+import { updateRestaurant } from '../../store/features/restaurantSlice'
 
 const RestaurantDetail = () => {
   const { id } = useParams();
@@ -26,12 +27,23 @@ const RestaurantDetail = () => {
   const [rateCount, setRateCount] = useState(0);
   const [commentsFiltredByRestaurant, setCommentsFiltredByRestaurant] = useState([]);
   const {categories} = useSelector(state => state.categories);
-  useEffect(() => {
-    //dispatch(resetComments());
-    setCommentsFiltredByRestaurant(comments.filter(comment => comment.restaurantId === restaurant.id));
-  }, [comments, restaurant.id]);
   
-  const addItem = (id) => {
+  useEffect(() => {
+    if (restaurant && comments.length > 0) {
+      const restaurantComments = comments.filter(comment => comment.restaurantId === restaurant.id);
+      setCommentsFiltredByRestaurant(restaurantComments);
+      
+      if (restaurantComments.length > 0) {
+        const avgRating = restaurantComments.reduce((acc, current) => acc + current.rating, 0) / restaurantComments.length;
+        dispatch(updateRestaurant({
+          ...restaurant,
+          rating: avgRating 
+        }));
+      }
+    }
+  }, [comments, restaurant?.id, dispatch]);
+  
+  const addItem = () => {
     setButtonHidden(true);
   }
 
@@ -55,7 +67,7 @@ const RestaurantDetail = () => {
     acc[item.categoryId].push(item)
     return acc
   }, {});
-  const findCategoryById = (categoryId) => categories.find(category => category.id === Number(categoryId)).name;
+  const findCategoryById = (categoryId) => categories?.find(category => category.id === Number(categoryId))?.name;
 
   const reply = (comment) => {
      dispatch(addComment(comment));
@@ -98,7 +110,7 @@ const RestaurantDetail = () => {
           <div className="flex items-center gap-4 mb-2">
             <div className="flex items-center gap-1">
               <FaStar className="text-yellow-400" />
-              <span className="font-semibold">{restaurant.rate}</span>
+              <span className="font-semibold">{restaurant.rating}</span>
             </div>
             <div className="flex items-center gap-1">
               <MdAccessTime />
@@ -269,7 +281,10 @@ const RestaurantDetail = () => {
                     comment: commentContent,
                     likes: 0,
                     rating: rateCount
-                  })}}
+                  })}
+                 
+                
+                }
                 >
                   <FaPaperPlane className="text-sm" />
                   Publier l'avis

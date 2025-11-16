@@ -1,19 +1,22 @@
 import React, {useState, useMemo} from 'react'
-import { restaurants } from '../../data/restaurants'
 import { Link } from 'react-router-dom'
-import { CATEGORIES } from '../../utils/constantes';
 import CategoryButton from '../../components/ui/CategoryButton';
 import { HiOutlineHeart } from 'react-icons/hi';
 import Restaurant from '../Restaurant';
 import { useSelector } from 'react-redux';
+import { CATEGORIES } from '../../utils/constantes';
 
 const Search = () => {
   const [restaurantName, setRestaurantName] = useState();
   const [categoryName, setCategoryName] = useState('all');
   const [isActive, setIsActive] = useState(false);
   const [sortOrder, setSortOrder] = useState('');
- const {favorites} = useSelector(state => state.favorites);
+  const {favorites} = useSelector(state => state.favorites);
   const { currentUser } = useSelector(state => state.auth);
+  const { restaurants } = useSelector(state => state.restaurant);
+  
+  // Transform categories constants to object format
+  const categories = CATEGORIES.map(category => ({ name: category.toLowerCase() }));
 
   // Optimize favorites lookup with Set for O(1) performance
   const favoriteIds = useMemo(() => {
@@ -67,11 +70,11 @@ const Search = () => {
       {/* Category Tags and View Toggle */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex flex-wrap gap-2">
-           {CATEGORIES.map((category , index)=> <CategoryButton
+           {categories.map((category , index)=> <CategoryButton
              key={index}
-             name={category}
+             name={category.name}
              onChangeCategory={onChangeCategory}
-             isActive={categoryName.toLowerCase() === category.toLowerCase()}
+             isActive={categoryName.toLowerCase() === category.name.toLowerCase()}
            />)}
 
         </div>
@@ -117,10 +120,10 @@ const Search = () => {
           <Restaurant
             key={restaurant.id}
             id={restaurant.id}
-            img={restaurant.img}
+            img={restaurant.coverImg}
             name={restaurant.name}
             rate={restaurant.rate}
-            time={restaurant.time}
+            time={restaurant.deliverySettings.estimatedDeliveryTime}
             tags={restaurant.tags}
             userId= {currentUser?.id}
             isActive ={ favoriteIds.has(restaurant.id) }

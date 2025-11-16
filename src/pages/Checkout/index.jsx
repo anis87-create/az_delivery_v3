@@ -1,15 +1,17 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { addOrder } from '../../store/features/orderSlice';
 import { resetCart } from '../../store/features/cartSlice';
+import { HiPlus } from 'react-icons/hi';
 
 const Checkout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const {cartItems,  subTotalPrice, totalWithFees} = useSelector(state => state.cart);
+  const { currentUser, users } = useSelector(state => state.auth);
 
-  const { currentUser } = useSelector(state => state.auth);
+  const [showAddOrderModal, setShowAddOrderModal] = useState(false);
   const groupedByCategory = cartItems.reduce((acc, item) => {
   const key = item.name;
   if (!acc[key]) {
@@ -35,6 +37,27 @@ const calculatedPrices = Object.entries(groupedByCategory).map(([category, items
 });
 
 const OrderTotalPrice = calculatedPrices.reduce((sum, item) => sum + item.totalPrice, 0); 
+  const handleCreateOrder = () => {
+    const orderData = {
+      id: Date.now(),
+      userId: currentUser?.id,
+      items: cartItems.map(item => ({
+        name: item.name,
+        image: item.image,
+        price: item.price,
+        quantity: item.quantity
+      })),
+      total: totalWithFees.total,
+      status: 'pending',
+      address: 'Address from form',
+      createdAt: new Date().toISOString()
+    };
+
+    dispatch(addOrder(orderData));
+    dispatch(resetCart());
+    setShowAddOrderModal(false);
+    navigate('/orders');
+  };
 
 
   return (
@@ -223,43 +246,48 @@ const OrderTotalPrice = calculatedPrices.reduce((sum, item) => sum + item.totalP
 
               <button
                 className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
-                onClick={() => {
-                  // Create order object
-                  const newOrder = {
-                    id: Date.now(),
-                    userId: currentUser?.id,
-                    items: cartItems.map(item => ({
-                      name: item.name,
-                      image: item.image,
-                      price: item.price,
-                      quantity: item.quantity
-                    })),
-                    total: totalWithFees.total,
-                    status: 'pending',
-                    address: 'Address from form', // You can get this from form state
-                    createdAt: new Date().toISOString()
-                  };
-     
-                  // Dispatch order
-                  try {
-                     dispatch(addOrder(newOrder));
-                  } catch (error) {
-                     
-                  }
-                 
-                   
-                  // Clear cart
-                 dispatch(resetCart());
-                  navigate('/orders');
-                  // Navigate to orders page
-            
-                }}
+                onClick={() => setShowAddOrderModal(true)}
               >
                 Place Order
               </button>
             </div>
           </div>
         </div>
+
+        {/* Order Confirmation Modal */}
+        {showAddOrderModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full">
+              <div className="flex items-center mb-4">
+                <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center mr-3">
+                  <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-medium text-gray-900">Confirm Order</h3>
+              </div>
+              
+              <p className="text-sm text-gray-500 mb-6">
+                Are you sure you want to place this order? Your cart will be processed and cleared.
+              </p>
+              
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => setShowAddOrderModal(false)}
+                  className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleCreateOrder}
+                  className="flex-1 px-4 py-2 text-sm font-medium text-white bg-orange-600 border border-transparent rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+                >
+                  Confirm Order
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

@@ -22,20 +22,18 @@ const orderSlice = createSlice({
       localStorage.setItem('orders', JSON.stringify(state.orders));
     },
 
-    updateOrderStatus: (state, action) => {
-      const { orderId, newStatus } = action.payload;
-      const order = state.orders.find(order => order.id === orderId);
-       
-      if (order) {
-        order.status = newStatus;
-        order.updatedAt = new Date().toISOString();
-      }
-
-      
-
+    updateOrderStatus: (state, {payload}) => {
+      const { orderId, status } = payload;
+      const index = state.orders.findIndex(restaurant => restaurant.id === orderId); 
+      state.orders[index].status = status;
+      state.orders[index].updatedAt = new Date().toISOString();
       localStorage.setItem('orders', JSON.stringify(state.orders))
     },
-
+    deleteOrder: (state, {payload}) => {
+      const { orderId } = payload; 
+      let filteredOrders = state.orders.filter(order => order.id !== orderId);
+      localStorage.setItem('orders', JSON.stringify(filteredOrders))
+    },
     /**
      * Clear all orders (optional, for testing purposes)
      */
@@ -46,5 +44,5 @@ const orderSlice = createSlice({
   },
 });
 
-export const { addOrder, updateOrderStatus, clearOrders } = orderSlice.actions;
+export const { addOrder, updateOrderStatus, clearOrders, deleteOrder } = orderSlice.actions;
 export default orderSlice.reducer;

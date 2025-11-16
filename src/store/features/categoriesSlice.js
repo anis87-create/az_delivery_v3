@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const itemsSlice = createSlice({
     name: 'categories',
     initialState: {
-        categories:  localStorage.getItem('categories') ? JSON.parse(localStorage.getItem('categories')) : []
+        categories:  localStorage.getItem('categories') ? [JSON.parse(localStorage.getItem('categories'))] : []
     },
     reducers: {
         addCategory: (state, {payload}) => {

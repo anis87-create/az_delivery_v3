@@ -15,7 +15,7 @@ const Navbar = () => {
 
   const totalQuantity = currentUser?.id ? cartItems.filter(item => item.userId === currentUser.id).reduce((acc, item) => acc + item.quantity, 0) : 0;
   const totalFavorites = currentUser?.id ? favorites.filter(favorite => favorite.userId === currentUser.id).length : 0;
-  const numberOfOrders = currentUser?.id ? orders.filter(order => order.userId === currentUser.id && (order.status === 'pending' || order.status === 'preparing' || order.status === 'on_the_way')).length : 0;
+  const numberOfOrders = currentUser?.id ? orders.filter(order => order.userId === currentUser.id && (order.status === 'pending' || order.status === 'confirmed' || order.status === 'delivering')).length : 0;
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);

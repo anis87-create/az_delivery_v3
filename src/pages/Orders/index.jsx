@@ -208,7 +208,7 @@ const Orders = () => {
                       <button
                         onClick={() => {
                           // Frontend only - no Redux logic
-                          dispatch(updateOrderStatus({orderId: order.id, newStatus:'cancelled'}))                          
+                          dispatch(updateOrderStatus({orderId: order.id, status:'cancelled'}))                          
                         }}
                         className='px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium text-sm'
                       >
